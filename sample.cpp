@@ -206,9 +206,6 @@ float			Unit(float [3], float [3]);
 float			Unit(float [3]);
 
 // My Windmill functions
-
-float bladeAngle = 0.0f;
-
 void DrawWindmillTower() {
     float baseWidth = 0.5f;
     float topWidth = 0.3f;
@@ -234,42 +231,37 @@ void DrawWindmillBlade() {
     float length = 1.0f;
 
     glBegin(GL_QUADS);
-    // Blade vertices
-    glVertex3f(0.0f, -width/2, 0.0f); // Center the blade on the axis
-    glVertex3f(0.0f, width/2, 0.0f);
-    glVertex3f(length, width/2, 0.0f);
-    glVertex3f(length, -width/2, 0.0f);
+    glVertex3f(0.0f, 0.0f, 0.0f);
+    glVertex3f(0.0f, width, 0.0f);
+    glVertex3f(length, width, 0.0f);
+    glVertex3f(length, 0.0f, 0.0f);
     glEnd();
 }
 
-
 void DrawWindmillBlades() {
     int numBlades = 4;
-    float bladeLength = 1.0f; // Make sure this matches the length used in DrawWindmillBlade
-    glTranslatef(0.0f, 0.0f, 2.0f); // Move to the top of the tower
     for (int i = 0; i < numBlades; ++i) {
         glPushMatrix();
-        // Rotate around the tower's center
-        glRotatef(bladeAngle + i * (360.0f / numBlades), 0.0f, 0.0f, 1.0f);
-        // Then translate out along the X-axis
-        glTranslatef(bladeLength / 2, 0.0f, 0.0f); // Move half the blade length out
+        glRotatef(i * (360.0f / numBlades), 0.0f, 0.0f, 1.0f);
         DrawWindmillBlade();
         glPopMatrix();
     }
 }
 
-
 void DrawWindmill() {
     // Draw Tower
     glPushMatrix();
+    glRotatef(270.0f, 1.0f, 0.0f, 0.0f); // Rotate 270 degrees around the X-axis
     DrawWindmillTower();
     glPopMatrix();
 
     // Draw Blades
     glPushMatrix();
-    DrawWindmillBlades(); // This now positions and animates the blades
+    glTranslatef(0.0f, 2.0f, 0.35f); // Adjust blade position to top of the tower
+    DrawWindmillBlades();
     glPopMatrix();
 }
+
 
 
 
@@ -376,7 +368,7 @@ main( int argc, char *argv[ ] )
 // this is typically where animation parameters are set
 //
 // do not call Display( ) from here -- let glutPostRedisplay( ) do it
-
+float bladeAngle = 0.0f;
 void
 Animate( )
 {
@@ -873,7 +865,64 @@ InitLists( )
 	if (DebugOn != 0)
 		fprintf(stderr, "Starting InitLists.\n");
 
-	
+	float dx = BOXSIZE / 2.f;
+	float dy = BOXSIZE / 2.f;
+	float dz = BOXSIZE / 2.f;
+	glutSetWindow( MainWindow );
+
+	// create the object:
+
+	BoxList = glGenLists( 1 );
+	glNewList( BoxList, GL_COMPILE );
+
+		glBegin( GL_QUADS );
+
+			glColor3f( 1., 0., 0. );
+
+				glNormal3f( 1., 0., 0. );
+					glVertex3f(  dx, -dy,  dz );
+					glVertex3f(  dx, -dy, -dz );
+					glVertex3f(  dx,  dy, -dz );
+					glVertex3f(  dx,  dy,  dz );
+
+				glNormal3f(-1., 0., 0.);
+					glVertex3f( -dx, -dy,  dz);
+					glVertex3f( -dx,  dy,  dz );
+					glVertex3f( -dx,  dy, -dz );
+					glVertex3f( -dx, -dy, -dz );
+
+			glColor3f( 0., 1., 0. );
+
+				glNormal3f(0., 1., 0.);
+					glVertex3f( -dx,  dy,  dz );
+					glVertex3f(  dx,  dy,  dz );
+					glVertex3f(  dx,  dy, -dz );
+					glVertex3f( -dx,  dy, -dz );
+
+				glNormal3f(0., -1., 0.);
+					glVertex3f( -dx, -dy,  dz);
+					glVertex3f( -dx, -dy, -dz );
+					glVertex3f(  dx, -dy, -dz );
+					glVertex3f(  dx, -dy,  dz );
+
+			glColor3f(0., 0., 1.);
+
+				glNormal3f(0., 0., 1.);
+					glVertex3f(-dx, -dy, dz);
+					glVertex3f( dx, -dy, dz);
+					glVertex3f( dx,  dy, dz);
+					glVertex3f(-dx,  dy, dz);
+
+				glNormal3f(0., 0., -1.);
+					glVertex3f(-dx, -dy, -dz);
+					glVertex3f(-dx,  dy, -dz);
+					glVertex3f( dx,  dy, -dz);
+					glVertex3f( dx, -dy, -dz);
+
+		glEnd( );
+
+	glEndList( );
+
 
 	// create the axes:
 
@@ -1278,7 +1327,7 @@ Unit(float vin[3], float vout[3])
 		dist = sqrtf(dist);
 		vout[0] = vin[0] / dist;
 		vout[1] = vin[1] / dist;
-		vout[2] = vin[2] / dist;
+		vout[2] = vin[2] / dist; 
 	}
 	else
 	{
