@@ -205,7 +205,11 @@ float			Dot(float [3], float [3]);
 float			Unit(float [3], float [3]);
 float			Unit(float [3]);
 
+
 // My Windmill functions
+
+float bladeAngle = 0.0f; // Global variable for blade angle
+
 void DrawWindmillTower() {
     float baseWidth = 0.5f;
     float topWidth = 0.3f;
@@ -242,11 +246,13 @@ void DrawWindmillBlades() {
     int numBlades = 4;
     for (int i = 0; i < numBlades; ++i) {
         glPushMatrix();
+        glRotatef(bladeAngle, 0.0f, 0.0f, 1.0f); // Rotate the blades based on bladeAngle
         glRotatef(i * (360.0f / numBlades), 0.0f, 0.0f, 1.0f);
         DrawWindmillBlade();
         glPopMatrix();
     }
 }
+
 
 void DrawWindmill() {
     // Draw Tower
@@ -368,7 +374,6 @@ main( int argc, char *argv[ ] )
 // this is typically where animation parameters are set
 //
 // do not call Display( ) from here -- let glutPostRedisplay( ) do it
-float bladeAngle = 0.0f;
 void
 Animate( )
 {
