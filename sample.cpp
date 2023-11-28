@@ -17,28 +17,9 @@
 #include <OpenGL/glu.h>
 #include "glut.h"
 
-
-//	This is a sample OpenGL / GLUT program
-//
-//	The objective is to draw a 3d object and change the color of the axes
-//		with a glut menu
-//
-//	The left mouse button does rotation
-//	The middle mouse button does scaling
-//	The user interface allows:
-//		1. The axes to be turned on and off
-//		2. The color of the axes to be changed
-//		3. Debugging to be turned on and off
-//		4. Depth cueing to be turned on and off
-//		5. The projection to be changed
-//		6. The transformations to be reset
-//		7. The program to quit
-//
-//	Author:			Joe Graphics
-
 // title of these windows:
 
-const char *WINDOWTITLE = "OpenGL / GLUT Sample -- Joe Graphics";
+const char *WINDOWTITLE = "CS450 Final Project - James Adelhelm";
 const char *GLUITITLE   = "User Interface Window";
 
 // what the glui package defines as true and false:
@@ -212,6 +193,10 @@ void	MouseMotion( int, int );
 void	Reset( );
 void	Resize( int, int );
 void	Visibility( int );
+void 	DrawWindmillTower();
+void 	DrawWindmillBlade();
+void 	DrawWindmillBlades();
+void 	DrawWindmill();
 
 void			Axes( float );
 void			HsvRgb( float[3], float [3] );
@@ -219,6 +204,64 @@ void			Cross(float[3], float[3], float[3]);
 float			Dot(float [3], float [3]);
 float			Unit(float [3], float [3]);
 float			Unit(float [3]);
+
+// My Windmill functions
+void DrawWindmillTower() {
+    float baseWidth = 0.5f;
+    float topWidth = 0.3f;
+    float height = 2.0f;
+    int numSides = 4; // Simple rectangular shape
+
+    glBegin(GL_QUADS);
+    for (int i = 0; i < numSides; ++i) {
+        float angle = 2.0f * M_PI * i / numSides;
+        float nextAngle = 2.0f * M_PI * (i + 1) / numSides;
+        // Bottom vertices
+        glVertex3f(baseWidth * cos(angle), baseWidth * sin(angle), 0.0f);
+        glVertex3f(baseWidth * cos(nextAngle), baseWidth * sin(nextAngle), 0.0f);
+        // Top vertices
+        glVertex3f(topWidth * cos(nextAngle), topWidth * sin(nextAngle), height);
+        glVertex3f(topWidth * cos(angle), topWidth * sin(angle), height);
+    }
+    glEnd();
+}
+
+void DrawWindmillBlade() {
+    float width = 0.1f;
+    float length = 1.0f;
+
+    glBegin(GL_QUADS);
+    glVertex3f(0.0f, 0.0f, 0.0f);
+    glVertex3f(0.0f, width, 0.0f);
+    glVertex3f(length, width, 0.0f);
+    glVertex3f(length, 0.0f, 0.0f);
+    glEnd();
+}
+
+void DrawWindmillBlades() {
+    int numBlades = 4;
+    for (int i = 0; i < numBlades; ++i) {
+        glPushMatrix();
+        glRotatef(i * (360.0f / numBlades), 0.0f, 0.0f, 1.0f);
+        DrawWindmillBlade();
+        glPopMatrix();
+    }
+}
+
+void DrawWindmill() {
+    // Draw Tower
+    glPushMatrix();
+    DrawWindmillTower();
+    glPopMatrix();
+
+    // Draw Blades
+    glPushMatrix();
+    glTranslatef(0.0f, 0.0f, 2.0f); // Adjust blade height
+    DrawWindmillBlades();
+    glPopMatrix();
+}
+
+
 
 
 // utility to create an array from 3 separate values:
@@ -323,10 +366,16 @@ main( int argc, char *argv[ ] )
 // this is typically where animation parameters are set
 //
 // do not call Display( ) from here -- let glutPostRedisplay( ) do it
-
+float bladeAngle = 0.0f;
 void
 Animate( )
 {
+	 // Update windmill blade rotation
+    bladeAngle += 1.0f; // Adjust rotation speed as needed
+    if (bladeAngle > 360.0f) {
+        bladeAngle -= 360.0f;
+    }
+
 	// put animation stuff in here -- change some global variables for Display( ) to find:
 
 	int ms = glutGet(GLUT_ELAPSED_TIME);
@@ -440,7 +489,8 @@ Display( )
 
 	// draw the box object by calling up its display list:
 
-	glCallList( BoxList );
+	// glCallList( BoxList );
+	DrawWindmill();
 
 #ifdef DEMO_Z_FIGHTING
 	if( DepthFightingOn != 0 )
