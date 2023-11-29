@@ -218,6 +218,8 @@ void DrawWindmillTower() {
     int numSides = 4; // Simple rectangular shape
 
     glBegin(GL_QUADS);
+	// set color to wooden brown
+	glColor3f(0.65f, 0.50f, 0.39f);  // RGB for wooden brown
     for (int i = 0; i < numSides; ++i) {
         float angle = 2.0f * M_PI * i / numSides;
         float nextAngle = 2.0f * M_PI * (i + 1) / numSides;
@@ -245,8 +247,12 @@ void DrawWindmillBlade() {
 
 void DrawWindmillBlades() {
     int numBlades = 4;
+	// set windmill blade color to white
+	glColor3f(1.0f, 1.0f, 1.0f);  // RGB for white
     for (int i = 0; i < numBlades; ++i) {
         glPushMatrix();
+		// move blades a lil further out towards z
+		glTranslatef(0.0f, 0.0f, 0.115f);
         glRotatef(bladeAngle, 0.0f, 0.0f, 1.0f); // Rotate the blades based on bladeAngle
         glRotatef(i * (360.0f / numBlades), 0.0f, 0.0f, 1.0f);
         DrawWindmillBlade();
