@@ -197,6 +197,7 @@ void 	DrawWindmillTower();
 void 	DrawWindmillBlade();
 void 	DrawWindmillBlades();
 void 	DrawWindmill();
+void 	DrawSkybox();
 
 void			Axes( float );
 void			HsvRgb( float[3], float [3] );
@@ -268,6 +269,57 @@ void DrawWindmill() {
     glPopMatrix();
 }
 
+void DrawSkybox() {
+    // Size of the skybox - should be large enough to encompass the whole scene
+    float size = 100.0f; 
+
+    // Disable depth writing
+    glDepthMask(GL_FALSE);  
+
+    // Start drawing the skybox
+    glBegin(GL_QUADS);
+
+    // Set the color to sky blue
+    glColor3f(0.53f, 0.81f, 0.92f);  // RGB for sky blue
+
+    // Top face
+    glVertex3f(-size, size, -size);
+    glVertex3f(-size, size, size);
+    glVertex3f(size, size, size);
+    glVertex3f(size, size, -size);
+
+    // Bottom face
+    glVertex3f(-size, -size, -size);
+    glVertex3f(size, -size, -size);
+    glVertex3f(size, -size, size);
+    glVertex3f(-size, -size, size);
+
+    // Four sides
+    glVertex3f(-size, -size, size);
+    glVertex3f(size, -size, size);
+    glVertex3f(size, size, size);
+    glVertex3f(-size, size, size);
+
+    glVertex3f(size, -size, -size);
+    glVertex3f(-size, -size, -size);
+    glVertex3f(-size, size, -size);
+    glVertex3f(size, size, -size);
+
+    glVertex3f(-size, -size, -size);
+    glVertex3f(-size, -size, size);
+    glVertex3f(-size, size, size);
+    glVertex3f(-size, size, -size);
+
+    glVertex3f(size, -size, size);
+    glVertex3f(size, -size, -size);
+    glVertex3f(size, size, -size);
+    glVertex3f(size, size, size);
+
+    glEnd();
+
+    // Re-enable depth writing
+    glDepthMask(GL_TRUE);
+}
 
 
 
@@ -495,9 +547,10 @@ Display( )
 
 
 	// draw the box object by calling up its display list:
-
 	// glCallList( BoxList );
+	
 	DrawWindmill();
+	DrawSkybox();
 
 #ifdef DEMO_Z_FIGHTING
 	if( DepthFightingOn != 0 )
