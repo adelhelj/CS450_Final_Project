@@ -217,43 +217,38 @@ float			Dot(float [3], float [3]);
 float			Unit(float [3], float [3]);
 float			Unit(float [3]);
 
-// Beach and Ocean functions
+// My beach and ocean functions
 const int BEACH_WIDTH = 200; // Width of the beach plane
-const int BEACH_DEPTH = 100; // Depth of the beach plane
-const float BEACH_START_Z = -20.0f; // Start Z position of the beach, negative to move it behind the windmill
+const int BEACH_DEPTH = 12; // Reduced depth of the beach plane so it doesn't extend too far
+const float BEACH_START_Z = 5.0f; // Start Z position of the beach just past the windmill
 const float WATER_LEVEL = 0.1f; // Height of the water relative to the land
 
 void DrawBeachAndOcean() {
     // Set the beach color to sandy yellow
     glColor3f(0.9f, 0.8f, 0.5f); // sandy yellow color
 
-    // Beach should start closer to the windmill and extend towards the camera
-    // If the windmill is at z = 0, you want to start the beach behind it
-    // Assuming the front of the windmill faces the negative Z direction
-    // The beach will extend in the positive Z direction towards the camera
-    // Adjust BEACH_START_Z accordingly, for example, start at -50 if the windmill is at -20
-    float beachStartZ = -50.0f;
-
     // Draw the beach quad
     glBegin(GL_QUADS);
-        glVertex3f(-BEACH_WIDTH / 2, WATER_LEVEL, beachStartZ);
-        glVertex3f(BEACH_WIDTH / 2, WATER_LEVEL, beachStartZ);
-        glVertex3f(BEACH_WIDTH / 2, WATER_LEVEL, beachStartZ + BEACH_DEPTH);
-        glVertex3f(-BEACH_WIDTH / 2, WATER_LEVEL, beachStartZ + BEACH_DEPTH);
+        glVertex3f(-BEACH_WIDTH / 2, WATER_LEVEL, BEACH_START_Z);
+        glVertex3f(BEACH_WIDTH / 2, WATER_LEVEL, BEACH_START_Z);
+        glVertex3f(BEACH_WIDTH / 2, WATER_LEVEL, BEACH_START_Z + BEACH_DEPTH);
+        glVertex3f(-BEACH_WIDTH / 2, WATER_LEVEL, BEACH_START_Z + BEACH_DEPTH);
     glEnd();
 
     // Set the ocean color to a nice shade of blue
     glColor3f(0.0f, 0.5f, 0.8f); // blue color
 
-    // Draw the ocean quad
-    // It should start right where the beach ends, hence the beachStartZ + BEACH_DEPTH
+    // Draw the ocean quad, it should start where the land ends
     glBegin(GL_QUADS);
-        glVertex3f(-BEACH_WIDTH / 2, WATER_LEVEL, beachStartZ + BEACH_DEPTH);
-        glVertex3f(BEACH_WIDTH / 2, WATER_LEVEL, beachStartZ + BEACH_DEPTH);
-        glVertex3f(BEACH_WIDTH / 2, WATER_LEVEL, beachStartZ + 2 * BEACH_DEPTH);
-        glVertex3f(-BEACH_WIDTH / 2, WATER_LEVEL, beachStartZ + 2 * BEACH_DEPTH);
+        glVertex3f(-BEACH_WIDTH / 2, WATER_LEVEL, BEACH_START_Z + BEACH_DEPTH);
+        glVertex3f(BEACH_WIDTH / 2, WATER_LEVEL, BEACH_START_Z + BEACH_DEPTH);
+        glVertex3f(BEACH_WIDTH / 2, WATER_LEVEL, 1000.0f);
+        glVertex3f(-BEACH_WIDTH / 2, WATER_LEVEL, 1000.0f);
     glEnd();
 }
+
+
+
 
 
 
