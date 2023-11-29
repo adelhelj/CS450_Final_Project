@@ -198,6 +198,7 @@ void 	DrawWindmillBlade();
 void 	DrawWindmillBlades();
 void 	DrawWindmill();
 void 	DrawSkybox();
+void 	DrawWindmillTowerTop();
 
 void			Axes( float );
 void			HsvRgb( float[3], float [3] );
@@ -210,6 +211,29 @@ float			Unit(float [3]);
 // My Windmill functions
 
 float bladeAngle = 0.0f; // Global variable for blade angle
+
+void DrawWindmillTowerTop() {
+    float baseRadius = 0.3f; // Match this with the top width of the tower
+    float topRadius = 0.05f; // Smaller radius for the top of the cone
+    float height = 0.5f; // Height of the cone
+    int slices = 20; // Number of subdivisions around the Z axis
+    int stacks = 20; // Number of subdivisions along the Z axis
+
+    // Cone base
+    GLUquadric* quad = gluNewQuadric();
+    glPushMatrix();
+    glTranslatef(0.0f, 2.0f, 0.0f); // Translate to the top of the tower
+    glRotatef(-90, 1.0f, 0.0f, 0.0f); // Orient the cone correctly
+    glColor3f(0.8f, 0.4f, 0.1f); // Set the cone color
+    gluCylinder(quad, baseRadius, topRadius, height, slices, stacks);
+    
+    // Cone cap
+    gluQuadricOrientation(quad, GLU_INSIDE);
+    gluDisk(quad, 0.0f, baseRadius, slices, 1); // Draw top cap
+    glPopMatrix();
+    gluDeleteQuadric(quad);
+}
+
 
 void DrawWindmillTower() {
     float baseWidth = 0.5f;
@@ -556,6 +580,7 @@ Display( )
 	// glCallList( BoxList );
 	
 	DrawWindmill();
+	DrawWindmillTowerTop();
 	DrawSkybox();
 
 #ifdef DEMO_Z_FIGHTING
