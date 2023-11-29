@@ -200,6 +200,7 @@ void 	DrawWindmill();
 void 	DrawSkybox();
 void 	DrawWindmillTowerTop();
 void	DrawLand();
+void 	DrawSun();
 
 
 void			Axes( float );
@@ -208,6 +209,17 @@ void			Cross(float[3], float[3], float[3]);
 float			Dot(float [3], float [3]);
 float			Unit(float [3], float [3]);
 float			Unit(float [3]);
+
+// Sun functions
+void DrawSun(){
+	// set sun color to yellow
+	glColor3f(1.0f, 1.0f, 0.0f);  // RGB for yellow
+	glPushMatrix();
+	// make the sun high up near top of skybox and make it huge like the sun
+	glTranslatef(0.0f, 45.0f, 0.0f);
+	glutSolidSphere(10.0f, 20, 20);
+	glPopMatrix();
+}
 
 
 // Cloud functions
@@ -496,7 +508,7 @@ MulArray3(float factor, float a, float b, float c )
 //#include "osutorus.cpp"
 //#include "bmptotexture.cpp"
 //#include "loadobjfile.cpp"
-//#include "keytime.cpp"
+#include "keytime.cpp"
 //#include "glslprogram.cpp"
 
 
@@ -672,6 +684,7 @@ Display( )
 	// draw the box object by calling up its display list:
 	// glCallList( BoxList );
 
+	DrawSun();
 	DrawLand();
 	DrawClouds();
 	DrawWindmill();
@@ -1049,67 +1062,7 @@ InitLists( )
 	if (DebugOn != 0)
 		fprintf(stderr, "Starting InitLists.\n");
 
-	float dx = BOXSIZE / 2.f;
-	float dy = BOXSIZE / 2.f;
-	float dz = BOXSIZE / 2.f;
-	glutSetWindow( MainWindow );
-
-	// create the object:
-
-	BoxList = glGenLists( 1 );
-	glNewList( BoxList, GL_COMPILE );
-
-		glBegin( GL_QUADS );
-
-			glColor3f( 1., 0., 0. );
-
-				glNormal3f( 1., 0., 0. );
-					glVertex3f(  dx, -dy,  dz );
-					glVertex3f(  dx, -dy, -dz );
-					glVertex3f(  dx,  dy, -dz );
-					glVertex3f(  dx,  dy,  dz );
-
-				glNormal3f(-1., 0., 0.);
-					glVertex3f( -dx, -dy,  dz);
-					glVertex3f( -dx,  dy,  dz );
-					glVertex3f( -dx,  dy, -dz );
-					glVertex3f( -dx, -dy, -dz );
-
-			glColor3f( 0., 1., 0. );
-
-				glNormal3f(0., 1., 0.);
-					glVertex3f( -dx,  dy,  dz );
-					glVertex3f(  dx,  dy,  dz );
-					glVertex3f(  dx,  dy, -dz );
-					glVertex3f( -dx,  dy, -dz );
-
-				glNormal3f(0., -1., 0.);
-					glVertex3f( -dx, -dy,  dz);
-					glVertex3f( -dx, -dy, -dz );
-					glVertex3f(  dx, -dy, -dz );
-					glVertex3f(  dx, -dy,  dz );
-
-			glColor3f(0., 0., 1.);
-
-				glNormal3f(0., 0., 1.);
-					glVertex3f(-dx, -dy, dz);
-					glVertex3f( dx, -dy, dz);
-					glVertex3f( dx,  dy, dz);
-					glVertex3f(-dx,  dy, dz);
-
-				glNormal3f(0., 0., -1.);
-					glVertex3f(-dx, -dy, -dz);
-					glVertex3f(-dx,  dy, -dz);
-					glVertex3f( dx,  dy, -dz);
-					glVertex3f( dx, -dy, -dz);
-
-		glEnd( );
-
-	glEndList( );
-
-
 	// create the axes:
-
 	AxesList = glGenLists( 1 );
 	glNewList( AxesList, GL_COMPILE );
 		glLineWidth( AXES_WIDTH );
