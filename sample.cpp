@@ -199,6 +199,7 @@ void 	DrawWindmillBlades();
 void 	DrawWindmill();
 void 	DrawSkybox();
 void 	DrawWindmillTowerTop();
+void	DrawLand();
 
 void			Axes( float );
 void			HsvRgb( float[3], float [3] );
@@ -207,6 +208,19 @@ float			Dot(float [3], float [3]);
 float			Unit(float [3], float [3]);
 float			Unit(float [3]);
 
+
+// My land functions
+void DrawLand(){
+	// set land color to green
+	glColor3f(0.0f, 0.5f, 0.0f);  // RGB for green
+	glBegin(GL_QUADS);
+	// set land vertices
+	glVertex3f(-100.0f, 0.0f, -100.0f);
+	glVertex3f(-100.0f, 0.0f, 100.0f);
+	glVertex3f(100.0f, 0.0f, 100.0f);
+	glVertex3f(100.0f, 0.0f, -100.0f);
+	glEnd();
+}
 
 // My Windmill functions
 
@@ -579,6 +593,7 @@ Display( )
 	// draw the box object by calling up its display list:
 	// glCallList( BoxList );
 	
+	DrawLand();
 	DrawWindmill();
 	DrawWindmillTowerTop();
 	DrawSkybox();
