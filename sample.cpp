@@ -140,7 +140,7 @@ const float	WHITE[ ] = { 1.,1.,1.,1. };
 
 // for animation:
 
-const int MS_PER_CYCLE = 10000;		// 10000 milliseconds = 10 seconds
+const int MS_PER_CYCLE = 100000;		// 10000 milliseconds = 10 seconds; make this larger to make animation slower
 
 
 // what options should we compile-in?
@@ -237,10 +237,9 @@ void InitSunPosition() {
 }
 
 void DrawSunPosition(float time) {
-	float scaledTime = time * 0.25f; // Scale down the time
-
+	
     // Convert linear time to ping-pong time
-    float pingPongTime = 1.0f - fabsf(2.0f * scaledTime - 1.0f);
+    float pingPongTime = 1.0f - fabsf(2.0f * time - 1.0f);
 
     // Get interpolated values for each axis using ping-pong time
     float sunPosX = SunPosX->GetValue(pingPongTime);
