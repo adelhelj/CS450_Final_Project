@@ -257,11 +257,21 @@ void InitClouds() {
 void DrawCloud(Cloud cloud) {
     for (int n = 0; n < cloud.numPuffs; n++) {
         glPushMatrix();
-        glTranslatef(cloud.puffs[n].offsetX, cloud.puffs[n].offsetY, cloud.puffs[n].offsetZ);
-        glutSolidSphere(cloud.puffs[n].size, 20, 20);
+        
+        // Increase the size of each puff to make the cloud puffier
+        float puffSize = cloud.puffs[n].size * 2.0f; // You can adjust the factor as needed
+        
+        // Slightly randomize the position of each puff within the cloud
+        float offsetX = cloud.puffs[n].offsetX * 2.0f; // Adjust this factor for more randomness
+        float offsetY = cloud.puffs[n].offsetY * 2.0f;
+        float offsetZ = cloud.puffs[n].offsetZ * 2.0f;
+        
+        glTranslatef(offsetX, offsetY, offsetZ);
+        glutSolidSphere(puffSize, 20, 20);
         glPopMatrix();
     }
 }
+
 
 void DrawClouds() {
     glColor3f(1.0f, 1.0f, 1.0f); // White color for clouds
