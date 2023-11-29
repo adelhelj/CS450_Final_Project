@@ -16,6 +16,7 @@
 #include <OpenGL/gl.h>
 #include <OpenGL/glu.h>
 #include "glut.h"
+#include "keytime.h"
 
 // title of these windows:
 
@@ -210,15 +211,54 @@ float			Dot(float [3], float [3]);
 float			Unit(float [3], float [3]);
 float			Unit(float [3]);
 
-// Sun functions
-void DrawSun(){
-	// set sun color to yellow
-	glColor3f(1.0f, 1.0f, 0.0f);  // RGB for yellow
-	glPushMatrix();
-	// make the sun high up near top of skybox and make it huge like the sun
-	glTranslatef(0.0f, 45.0f, 0.0f);
-	glutSolidSphere(10.0f, 20, 20);
-	glPopMatrix();
+
+// Create three instances of Keytimes for each axis
+Keytimes *SunPosX = new Keytimes();
+Keytimes *SunPosY = new Keytimes();
+Keytimes *SunPosZ = new Keytimes();
+
+void InitSunPosition() {
+    float hugeNumber = 50.0f; // Adjust this value as needed
+
+    // Initialize Keytimes for X-axis (if the sun moves along X-axis)
+    SunPosX->AddTimeValue(0.0f, 0.0f); // Start position
+    SunPosX->AddTimeValue(0.5f, 0.0f); // Mid position
+    SunPosX->AddTimeValue(1.0f, 0.0f); // End position
+
+    // Initialize Keytimes for Y-axis
+    SunPosY->AddTimeValue(0.0f, 0.0f); // Start position (below the horizon)
+    SunPosY->AddTimeValue(0.5f, hugeNumber); // Mid position (above the horizon)
+    SunPosY->AddTimeValue(1.0f, 0.0f); // End position (back below the horizon)
+
+    // Initialize Keytimes for Z-axis
+    SunPosZ->AddTimeValue(0.0f, -hugeNumber); // Start position (far away)
+    SunPosZ->AddTimeValue(0.5f, 0.0f); // Mid position (closest point)
+    SunPosZ->AddTimeValue(1.0f, hugeNumber); // End position (far away again)
+}
+
+void DrawSunPosition(float time) {
+	float scaledTime = time * 0.25f; // Scale down the time
+
+    // Convert linear time to ping-pong time
+    float pingPongTime = 1.0f - fabsf(2.0f * scaledTime - 1.0f);
+
+    // Get interpolated values for each axis using ping-pong time
+    float sunPosX = SunPosX->GetValue(pingPongTime);
+    float sunPosY = SunPosY->GetValue(pingPongTime);
+    float sunPosZ = SunPosZ->GetValue(pingPongTime);
+
+    // Apply the translation to move the sun
+    glTranslatef(sunPosX, sunPosY, sunPosZ);
+}
+
+
+void DrawSun(float time) {
+    // Set sun color to yellow
+    glColor3f(1.0f, 1.0f, 0.0f); // RGB for yellow
+    glPushMatrix();
+    DrawSunPosition(Time);
+    glutSolidSphere(5.0f, 20, 20); // Draw the sun as a sphere
+    glPopMatrix();
 }
 
 
@@ -539,6 +579,7 @@ main( int argc, char *argv[ ] )
 	// setup all the user interface stuff:
 
 	InitMenus( );
+	InitSunPosition();
 	InitCloudPositions();
 	InitClouds();
 
@@ -684,7 +725,7 @@ Display( )
 	// draw the box object by calling up its display list:
 	// glCallList( BoxList );
 
-	DrawSun();
+	DrawSun(Time);
 	DrawLand();
 	DrawClouds();
 	DrawWindmill();
