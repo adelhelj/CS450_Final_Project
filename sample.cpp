@@ -201,12 +201,79 @@ void 	DrawSkybox();
 void 	DrawWindmillTowerTop();
 void	DrawLand();
 
+
 void			Axes( float );
 void			HsvRgb( float[3], float [3] );
 void			Cross(float[3], float[3], float[3]);
 float			Dot(float [3], float [3]);
 float			Unit(float [3], float [3]);
 float			Unit(float [3]);
+
+
+// Cloud functions
+// Structure for cloud puffs
+// Define an array to hold cloud positions
+typedef struct CloudPosition {
+    float x, y, z;
+} CloudPosition;
+
+CloudPosition cloudPositions[100]; // Array to hold cloud positions
+
+// Initialize cloud positions
+void InitCloudPositions() {
+    for (int i = 0; i < 100; i++) {
+        cloudPositions[i].x = (float)(rand() % 200 - 100);
+        cloudPositions[i].y = (float)(rand() % 100 + 40);
+        cloudPositions[i].z = (float)(rand() % 200 - 100);
+    }
+}
+
+typedef struct CloudPuff {
+    float offsetX, offsetY, offsetZ; // Offset positions for each puff
+    float size;                      // Size of each puff
+} CloudPuff;
+
+// Structure for a cloud
+typedef struct Cloud {
+    CloudPuff puffs[7]; // Each cloud can have up to 7 puffs
+    int numPuffs;       // Actual number of puffs in this cloud
+} Cloud;
+
+Cloud clouds[100]; // Array to hold all clouds
+
+void InitClouds() {
+    for (int i = 0; i < 100; i++) {
+        // Randomize cloud position
+        clouds[i].numPuffs = 3 + rand() % 5;
+        for (int n = 0; n < clouds[i].numPuffs; n++) {
+            clouds[i].puffs[n].offsetX = (rand() % 20 - 10) * 0.1f;
+            clouds[i].puffs[n].offsetY = (rand() % 20 - 10) * 0.1f;
+            clouds[i].puffs[n].offsetZ = (rand() % 20 - 10) * 0.1f;
+            clouds[i].puffs[n].size = 1.0f + (rand() % 100) / 50.0f;
+        }
+    }
+}
+
+void DrawCloud(Cloud cloud) {
+    for (int n = 0; n < cloud.numPuffs; n++) {
+        glPushMatrix();
+        glTranslatef(cloud.puffs[n].offsetX, cloud.puffs[n].offsetY, cloud.puffs[n].offsetZ);
+        glutSolidSphere(cloud.puffs[n].size, 20, 20);
+        glPopMatrix();
+    }
+}
+
+void DrawClouds() {
+    glColor3f(1.0f, 1.0f, 1.0f); // White color for clouds
+    for (int i = 0; i < 100; i++) {
+        glPushMatrix();
+        glTranslatef(cloudPositions[i].x, cloudPositions[i].y, cloudPositions[i].z);
+        DrawCloud(clouds[i]);
+        glPopMatrix();
+    }
+}
+
+
 
 
 // My land functions
@@ -450,6 +517,8 @@ main( int argc, char *argv[ ] )
 	// setup all the user interface stuff:
 
 	InitMenus( );
+	InitCloudPositions();
+	InitClouds();
 
 	// draw the scene once and wait for some interaction:
 	// (this will never return)
@@ -592,8 +661,9 @@ Display( )
 
 	// draw the box object by calling up its display list:
 	// glCallList( BoxList );
-	
+
 	DrawLand();
+	DrawClouds();
 	DrawWindmill();
 	DrawWindmillTowerTop();
 	DrawSkybox();
