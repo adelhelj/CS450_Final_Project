@@ -227,10 +227,11 @@ float			Unit(float [3]);
 // Building Functions
 typedef struct {
     float x, y, z; // Position
-	
-	float width;	// width of building
+    float width;   // Width of building
     float height;  // Height of the building
+    int colorIndex; // Index to the color array
 } Building;
+
 
 Building buildings[100]; // Array to hold building data
 
@@ -242,28 +243,71 @@ float maxY = 10.0f;  // Maximum Y coordinate
 float minZ = -100.0f;  // Minimum Z coordinate (behind the windmill)
 float maxZ = -10.0f; // Maximum Z coordinate
 
-void InitBuildingPositions(){
+
+// Building color code
+
+typedef struct {
+    float r, g, b;  // RGB color components
+} Color;
+
+
+Color floridaKeysColors[] = {
+    { 0.0f, 0.6f, 0.8f }, // Ocean Blue
+    { 0.2f, 0.8f, 0.8f }, // Turquoise
+    { 0.1f, 0.7f, 0.7f }, // Teal
+    { 0.2f, 0.5f, 0.7f }, // Cerulean
+    { 0.3f, 0.9f, 0.9f },  // Sky Blue
+	{ 0.8f, 0.4f, 0.6f },// Carribean pink
+	 // cream
+	{ 0.9f, 0.8f, 0.6f },
+	// marble
+	{ 0.9f, 0.9f, 0.9f },
+	// light grey
+	{ 0.8f, 0.8f, 0.8f },
+	// dark grey
+	{ 0.6f, 0.6f, 0.6f },
+	// dark brown
+	{ 0.4f, 0.2f, 0.0f },
+	// light brown
+	{ 0.6f, 0.4f, 0.2f },
+};
+
+
+
+
+
+
+void InitBuildingPositions() {
+    // Define the maximum height of buildings relative to the windmill
+    float maxBuildingHeight = 2.0f; // Assuming windmill height is 2.0 units
+	int numColors = sizeof(floridaKeysColors) / sizeof(Color);
+
     for (int i = 0; i < 100; i++) {
         buildings[i].x = minX + ((float)rand() / RAND_MAX) * (maxX - minX);
-		buildings[i].y = minY;
+        buildings[i].y = minY; // Ground level
         buildings[i].z = minZ + ((float)rand() / RAND_MAX) * (maxZ - minZ);
-        buildings[i].height = (float)(rand() % 10 + 1);
-		buildings[i].width = (float)(rand() % 4 + 1);
+        // Set the building height to be a random value, but not more than maxBuildingHeight
+        buildings[i].height = (float)(rand() % (int)(maxBuildingHeight * 10)) / 10.0f + 0.5f; // Added 0.5 to ensure we don't have 0 height
+        buildings[i].width = (float)(rand() % 4 + 1);
+		buildings[i].colorIndex = rand() % numColors; // Assign a random color index
+
     }
 }
+
 
 
 void DrawBuildings() {
     
 
     for (int i = 0; i < 100; i++) {
+		Color color = floridaKeysColors[buildings[i].colorIndex];
         glPushMatrix();
         // Translate to the building's location
         glTranslatef(buildings[i].x, buildings[i].y + buildings[i].height * 0.5, buildings[i].z);
         // Scale the cube to the building's width and height
         glScalef(buildings[i].width, buildings[i].height, buildings[i].width);
 		// set building color to grey white
-    	glColor3f(0.8f, 0.8f, 0.8f); // RGB for grey white
+		glColor3f(color.r, color.g, color.b); // Set the building color
         // Draw the main building cube
         glutSolidCube(1.0f);
 
