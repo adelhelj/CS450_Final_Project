@@ -253,21 +253,35 @@ void InitBuildingPositions(){
 }
 
 
-// Function that randomly scatters buildings on the land, uses quads to build different sized sand colored buildings
-void DrawBuildings(){
-	// set building color to grey white
-	glColor3f(0.8f, 0.8f, 0.8f); // RGB for grey white
-	
+void DrawBuildings() {
+    
 
-	// for loop that draws the buildings 
-	for (int i = 0; i < 100; i++) {
+    for (int i = 0; i < 100; i++) {
         glPushMatrix();
-        glTranslatef(buildings[i].x, buildings[i].y, buildings[i].z);
-		glScalef(buildings[i].width, buildings[i].height, buildings[i].width);
+        // Translate to the building's location
+        glTranslatef(buildings[i].x, buildings[i].y + buildings[i].height * 0.5, buildings[i].z);
+        // Scale the cube to the building's width and height
+        glScalef(buildings[i].width, buildings[i].height, buildings[i].width);
+		// set building color to grey white
+    	glColor3f(0.8f, 0.8f, 0.8f); // RGB for grey white
+        // Draw the main building cube
+        glutSolidCube(1.0f);
+
+        // Set roof color
+        glColor3f(0.5f, 0.5f, 0.5f); // RGB for grey
+
+        // Draw the roof
+        // Translate up by half the height of the building plus half the roof thickness
+        glTranslatef(0.0f, 0.5f + 0.05f, 0.0f);
+        // Scale the roof to be slightly larger than the building, and flatter
+        glScalef(1.1f, 0.1f, 1.1f);
+        // Draw the roof cube
         glutSolidCube(1.0f);
         glPopMatrix();
     }
 }
+
+
 
 
 
