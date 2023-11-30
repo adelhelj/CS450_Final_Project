@@ -206,9 +206,11 @@ void 	DrawSunPosition();
 void 	InitSunPosition();
 void 	InitCloudPositions();
 void 	InitClouds();
+void 	InitBuildingPositions();
 void 	DrawCloud();
 void 	DrawClouds();
 void 	DrawBeachAndOcean();
+void 	DrawBuildings();
 // Function prototype
 unsigned char *BmpToTexture(char *filename, int *width, int *height);
 void LoadSandTexture();
@@ -219,6 +221,48 @@ void			Cross(float[3], float[3], float[3]);
 float			Dot(float [3], float [3]);
 float			Unit(float [3], float [3]);
 float			Unit(float [3]);
+
+
+// Building Functions
+typedef struct {
+    float x, y, z; // Position
+    float height;  // Height of the building
+} Building;
+
+Building buildings[100]; // Array to hold building data
+
+// Define boundaries (example values, adjust according to scene)
+float minX = -50.0f; // Minimum X coordinate
+float maxX = 50.0f;  // Maximum X coordinate
+float minZ = -100.0f;  // Minimum Z coordinate (behind the windmill)
+float maxZ = -10.0f; // Maximum Z coordinate
+
+void InitBuildingPositions(){
+    for (int i = 0; i < 100; i++) {
+        buildings[i].x = minX + ((float)rand() / RAND_MAX) * (maxX - minX);
+        buildings[i].y = 0.0f; // Assuming y is the ground level
+        buildings[i].z = minZ + ((float)rand() / RAND_MAX) * (maxZ - minZ);
+        buildings[i].height = (float)(rand() % 10 + 1);
+    }
+}
+
+
+// Function that randomly scatters buildings on the land, uses quads to build different sized sand colored buildings
+void DrawBuildings(){
+	// set building color to california building color
+	glColor3f(0.8f, 0.8f, 0.8f); // RGB for california building color
+
+	// for loop that draws the buildings 
+	for (int i = 0; i < 100; i++) {
+        glPushMatrix();
+        glTranslatef(buildings[i].x, buildings[i].y, buildings[i].z);
+        glScalef(1.0f, buildings[i].height, 1.0f);
+        glutSolidCube(1.0f);
+        glPopMatrix();
+    }
+}
+
+
 
 // My beach and ocean functions
 // Global texture ID for the beach sand
@@ -709,6 +753,7 @@ main( int argc, char *argv[ ] )
 	// setup all the user interface stuff:
 
 	InitMenus( );
+	InitBuildingPositions();
 	InitSunPosition();
 	InitCloudPositions();
 	InitClouds();
@@ -862,7 +907,7 @@ Display( )
     glTranslatef(0.0f, 0.0f, 0.0f); 
     DrawBeachAndOcean();
     glPopMatrix();
-
+	DrawBuildings();
 	DrawClouds();
 	DrawWindmill();
 	DrawWindmillTowerTop();
