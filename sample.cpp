@@ -211,6 +211,7 @@ void 	DrawCloud();
 void 	DrawClouds();
 void 	DrawBeachAndOcean();
 void 	DrawBuildings();
+
 // Function prototype
 unsigned char *BmpToTexture(char *filename, int *width, int *height);
 void LoadSandTexture();
@@ -226,6 +227,8 @@ float			Unit(float [3]);
 // Building Functions
 typedef struct {
     float x, y, z; // Position
+	
+	float width;	// width of building
     float height;  // Height of the building
 } Building;
 
@@ -234,29 +237,33 @@ Building buildings[100]; // Array to hold building data
 // Define boundaries (example values, adjust according to scene)
 float minX = -50.0f; // Minimum X coordinate
 float maxX = 50.0f;  // Maximum X coordinate
+float minY = 0.0f;   // Minimum Y coordinate (ground level)
+float maxY = 10.0f;  // Maximum Y coordinate
 float minZ = -100.0f;  // Minimum Z coordinate (behind the windmill)
 float maxZ = -10.0f; // Maximum Z coordinate
 
 void InitBuildingPositions(){
     for (int i = 0; i < 100; i++) {
         buildings[i].x = minX + ((float)rand() / RAND_MAX) * (maxX - minX);
-        buildings[i].y = 0.0f; // Assuming y is the ground level
+		buildings[i].y = minY;
         buildings[i].z = minZ + ((float)rand() / RAND_MAX) * (maxZ - minZ);
         buildings[i].height = (float)(rand() % 10 + 1);
+		buildings[i].width = (float)(rand() % 4 + 1);
     }
 }
 
 
 // Function that randomly scatters buildings on the land, uses quads to build different sized sand colored buildings
 void DrawBuildings(){
-	// set building color to california building color
-	glColor3f(0.8f, 0.8f, 0.8f); // RGB for california building color
+	// set building color to grey white
+	glColor3f(0.8f, 0.8f, 0.8f); // RGB for grey white
+	
 
 	// for loop that draws the buildings 
 	for (int i = 0; i < 100; i++) {
         glPushMatrix();
         glTranslatef(buildings[i].x, buildings[i].y, buildings[i].z);
-        glScalef(1.0f, buildings[i].height, 1.0f);
+		glScalef(buildings[i].width, buildings[i].height, buildings[i].width);
         glutSolidCube(1.0f);
         glPopMatrix();
     }
