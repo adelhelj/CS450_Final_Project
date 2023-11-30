@@ -209,6 +209,9 @@ void 	InitClouds();
 void 	DrawCloud();
 void 	DrawClouds();
 void 	DrawBeachAndOcean();
+// Function prototype
+unsigned char *BmpToTexture(char *filename, int *width, int *height);
+void LoadSandTexture();
 
 void			Axes( float );
 void			HsvRgb( float[3], float [3] );
@@ -218,22 +221,94 @@ float			Unit(float [3], float [3]);
 float			Unit(float [3]);
 
 // My beach and ocean functions
+// Global texture ID for the beach sand
+GLuint beachTextureId;
+
+void LoadSandTexture() {
+    // The path to your BMP texture file
+    char sandTextureFile[] = "sand.bmp";
+    
+    int width, height;
+    unsigned char *sandTextureData = BmpToTexture(sandTextureFile, &width, &height);
+    if (sandTextureData == NULL) {
+        fprintf(stderr, "Cannot load sand texture\n");
+        exit(1);
+    }
+
+    // Generate texture ID and bind it
+    glGenTextures(1, &beachTextureId);
+    glBindTexture(GL_TEXTURE_2D, beachTextureId);
+
+    // Set texture parameters
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+    // Send texture data to OpenGL
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, sandTextureData);
+
+    // Clean up
+    delete[] sandTextureData;
+}
+
+// land / grass texture id and texture code
+GLuint grassTextureId;
+
+void LoadGrassTexture(){
+	// path to grass texture file
+	char grassTextureFile[] = "grass.bmp";
+
+	int width, height;
+	unsigned char *grassTextureData = BmpToTexture(grassTextureFile, &width, &height);
+	if (grassTextureData == NULL){
+		fprintf(stderr, "Cannot load grass texture\n");
+		exit(1);
+	}
+
+	// generate texture id and bind it
+	glGenTextures(1, &grassTextureId);
+	glBindTexture(GL_TEXTURE_2D, grassTextureId);
+
+	// set texture parameters
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); // repeat texture in S direction
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT); // repeat texture in T direction
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); // linear mag filter
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); // linear min filter
+
+	// send texture data to OpenGL
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, grassTextureData);
+
+	// clean up
+	delete[] grassTextureData;
+}
+
+
+
+
 const int BEACH_WIDTH = 200; // Width of the beach plane
 const int BEACH_DEPTH = 12; // Reduced depth of the beach plane so it doesn't extend too far
 const float BEACH_START_Z = 5.0f; // Start Z position of the beach just past the windmill
 const float WATER_LEVEL = 0.1f; // Height of the water relative to the land
 
 void DrawBeachAndOcean() {
-    // Set the beach color to sandy yellow
+    // Bind the sand texture
+    glBindTexture(GL_TEXTURE_2D, beachTextureId);
+    glEnable(GL_TEXTURE_2D);
+
+    // Set the beach color to sandy yellow and bind the texture
     glColor3f(0.9f, 0.8f, 0.5f); // sandy yellow color
 
-    // Draw the beach quad
+    // Draw the beach quad with texture coordinates
     glBegin(GL_QUADS);
-        glVertex3f(-BEACH_WIDTH / 2, WATER_LEVEL, BEACH_START_Z);
-        glVertex3f(BEACH_WIDTH / 2, WATER_LEVEL, BEACH_START_Z);
-        glVertex3f(BEACH_WIDTH / 2, WATER_LEVEL, BEACH_START_Z + BEACH_DEPTH);
-        glVertex3f(-BEACH_WIDTH / 2, WATER_LEVEL, BEACH_START_Z + BEACH_DEPTH);
+        glTexCoord2f(0.0f, 0.0f); glVertex3f(-BEACH_WIDTH / 2, WATER_LEVEL, BEACH_START_Z);
+        glTexCoord2f(1.0f, 0.0f); glVertex3f(BEACH_WIDTH / 2, WATER_LEVEL, BEACH_START_Z);
+        glTexCoord2f(1.0f, 1.0f); glVertex3f(BEACH_WIDTH / 2, WATER_LEVEL, BEACH_START_Z + BEACH_DEPTH);
+        glTexCoord2f(0.0f, 1.0f); glVertex3f(-BEACH_WIDTH / 2, WATER_LEVEL, BEACH_START_Z + BEACH_DEPTH);
     glEnd();
+
+    glDisable(GL_TEXTURE_2D);
+
 
     // Set the ocean color to a nice shade of blue
     glColor3f(0.0f, 0.5f, 0.8f); // blue color
@@ -246,18 +321,6 @@ void DrawBeachAndOcean() {
         glVertex3f(-BEACH_WIDTH / 2, WATER_LEVEL, 1000.0f);
     glEnd();
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
 // Sun functions
 // Create three instances of Keytimes for each axis
@@ -385,18 +448,26 @@ void DrawClouds() {
 
 
 
-// My land functions
+// My land functions - draw the land with grass texture
 void DrawLand(){
-	// set land color to green
-	glColor3f(0.0f, 0.5f, 0.0f);  // RGB for green
+	// bind the grass texture
+	glBindTexture(GL_TEXTURE_2D, grassTextureId);
+	glEnable(GL_TEXTURE_2D);
+
+	// set the grass color to green and bind the texture
+	glColor3f(0.0f, 0.5f, 0.0f); // green color
+
+	// draw the land quad with texture coordinates
 	glBegin(GL_QUADS);
-	// set land vertices
-	glVertex3f(-100.0f, 0.0f, -100.0f);
-	glVertex3f(-100.0f, 0.0f, 100.0f);
-	glVertex3f(100.0f, 0.0f, 100.0f);
-	glVertex3f(100.0f, 0.0f, -100.0f);
+		glTexCoord2f(0.0f, 0.0f); glVertex3f(-1000.0f, 0.0f, 1000.0f);
+		glTexCoord2f(1.0f, 0.0f); glVertex3f(1000.0f, 0.0f, 1000.0f);
+		glTexCoord2f(1.0f, 1.0f); glVertex3f(1000.0f, 0.0f, -1000.0f);
+		glTexCoord2f(0.0f, 1.0f); glVertex3f(-1000.0f, 0.0f, -1000.0f);
 	glEnd();
+
+	glDisable(GL_TEXTURE_2D);
 }
+	
 
 // My Windmill functions
 
@@ -593,7 +664,7 @@ MulArray3(float factor, float a, float b, float c )
 //#include "osusphere.cpp"
 //#include "osucone.cpp"
 //#include "osutorus.cpp"
-//#include "bmptotexture.cpp"
+#include "bmptotexture.cpp"
 //#include "loadobjfile.cpp"
 #include "keytime.cpp"
 //#include "glslprogram.cpp"
@@ -617,6 +688,9 @@ main( int argc, char *argv[ ] )
 	// create the display lists that **will not change**:
 
 	InitLists( );
+	LoadSandTexture();
+	LoadGrassTexture();
+
 
 	// init all the global variables used by Display( ):
 	// this will also post a redisplay
