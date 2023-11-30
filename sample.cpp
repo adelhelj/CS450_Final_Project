@@ -361,13 +361,13 @@ void DrawSunPosition(float time) {
     glTranslatef(sunPosX, sunPosY, sunPosZ);
 }
 
-
 void DrawSun(float time) {
     // Set sun color to yellow
     glColor3f(1.0f, 1.0f, 0.0f); // RGB for yellow
     glPushMatrix();
     DrawSunPosition(Time);
     glutSolidSphere(5.0f, 20, 20); // Draw the sun as a sphere
+	glDisable(GL_TEXTURE_2D);
     glPopMatrix();
 }
 
@@ -690,7 +690,7 @@ main( int argc, char *argv[ ] )
 	InitLists( );
 	LoadSandTexture();
 	LoadGrassTexture();
-
+	
 
 	// init all the global variables used by Display( ):
 	// this will also post a redisplay
