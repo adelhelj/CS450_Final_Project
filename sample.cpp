@@ -257,7 +257,7 @@ GLuint grassTextureId;
 
 void LoadGrassTexture(){
 	// path to grass texture file
-	char grassTextureFile[] = "grass.bmp";
+	char grassTextureFile[] = "dark_grass.bmp";
 
 	int width, height;
 	unsigned char *grassTextureData = BmpToTexture(grassTextureFile, &width, &height);
@@ -485,7 +485,10 @@ void DrawWindmillTowerTop() {
     glPushMatrix();
     glTranslatef(0.0f, 2.0f, 0.0f); // Translate to the top of the tower
     glRotatef(-90, 1.0f, 0.0f, 0.0f); // Orient the cone correctly
-    glColor3f(0.8f, 0.4f, 0.1f); // Set the cone color
+	// Set the cone color to brown that contrasts cream white
+	glColor3f(0.6f, 0.4f, 0.2f); // RGB for brown
+	
+    
     gluCylinder(quad, baseRadius, topRadius, height, slices, stacks);
     
     // Cone cap
@@ -493,6 +496,7 @@ void DrawWindmillTowerTop() {
     gluDisk(quad, 0.0f, baseRadius, slices, 1); // Draw top cap
     glPopMatrix();
     gluDeleteQuadric(quad);
+
 }
 
 
@@ -503,8 +507,10 @@ void DrawWindmillTower() {
     int numSides = 4; // Simple rectangular shape
 
     glBegin(GL_QUADS);
-	// set color to wooden brown
-	glColor3f(0.65f, 0.50f, 0.39f);  // RGB for wooden brown
+	// set windmill tower color to a dark grey blue
+	glColor3f(0.0f, 0.0f, 0.2f); // RGB for dark grey blue
+	
+	
     for (int i = 0; i < numSides; ++i) {
         float angle = 2.0f * M_PI * i / numSides;
         float nextAngle = 2.0f * M_PI * (i + 1) / numSides;
@@ -514,9 +520,11 @@ void DrawWindmillTower() {
         // Top vertices
         glVertex3f(topWidth * cos(nextAngle), topWidth * sin(nextAngle), height);
         glVertex3f(topWidth * cos(angle), topWidth * sin(angle), height);
+
     }
     glEnd();
 }
+
 
 void DrawWindmillBlade() {
     float width = 0.1f;
@@ -529,6 +537,7 @@ void DrawWindmillBlade() {
     glVertex3f(length, 0.0f, 0.0f);
     glEnd();
 }
+
 
 void DrawWindmillBlades() {
     int numBlades = 4;
