@@ -866,11 +866,22 @@ Animate( )
 }
 
 
+Keytimes EyeX;
+Keytimes EyeY;
+Keytimes EyeZ;
+
+const int MSEC = 10000;		// 10000 milliseconds = 10 seconds
+
+
 // draw the complete scene:
 
 void
 Display( )
 {
+	int eyemsec = glutGet( GLUT_ELAPSED_TIME )  %  MSEC;
+	// turn that into a time in seconds:
+	float eyenowTime = (float)eyemsec  / 1000.;
+
 	if (DebugOn != 0)
 		fprintf(stderr, "Starting Display.\n");
 
@@ -918,9 +929,11 @@ Display( )
 	glMatrixMode( GL_MODELVIEW );
 	glLoadIdentity( );
 
-	// set the eye position, look-at position, and up-vector:
+	// set the eye position, look-at position, and up-vector using keytimes variables for the positions that change over time
+	gluLookAt( EyeX.GetValue(eyenowTime	), EyeY.GetValue(eyenowTime	), EyeZ.GetValue(eyenowTime),     0.f, 0.f, 0.f,     0.f, 1.f, 0.f );
 
-	gluLookAt( 0.f, 0.f, 3.f,     0.f, 0.f, 0.f,     0.f, 1.f, 0.f );
+
+	
 
 	// rotate the scene:
 
@@ -1319,6 +1332,44 @@ InitGraphics( )
 	// but, this sets us up nicely for doing animation
 
 	glutIdleFunc( Animate );
+	EyeX.Init();
+	EyeX.AddTimeValue(0.0, 0.0);
+	EyeX.AddTimeValue(1.0, 10.0);
+	EyeX.AddTimeValue(2.0, 20.0);
+	EyeX.AddTimeValue(3.0, 30.0);
+	EyeX.AddTimeValue(4.0, 40.0);
+	EyeX.AddTimeValue(5.0, 50.0);
+	EyeX.AddTimeValue(6.0, 40.0);
+	EyeX.AddTimeValue(7.0, 30.0);
+	EyeX.AddTimeValue(8.0, 20.0);
+	EyeX.AddTimeValue(9.0, 10.0);
+	EyeX.AddTimeValue(10.0, 0.0);
+
+	EyeY.Init();
+	EyeY.AddTimeValue(0.0, 5.0);
+	EyeY.AddTimeValue(1.0, 15.0);
+	EyeY.AddTimeValue(2.0, 25.0);
+	EyeY.AddTimeValue(3.0, 35.0);
+	EyeY.AddTimeValue(4.0, 40.0);
+	EyeY.AddTimeValue(5.0, 50.0);
+	EyeY.AddTimeValue(6.0, 40.0);
+	EyeY.AddTimeValue(7.0, 35.0);
+	EyeY.AddTimeValue(8.0, 25.0);
+	EyeY.AddTimeValue(9.0, 15.0);
+	EyeY.AddTimeValue(10.0, 5.0);
+
+	EyeZ.Init();
+	EyeZ.AddTimeValue(0.0, 15.0);
+	EyeZ.AddTimeValue(1.0, 15.0);
+	EyeZ.AddTimeValue(2.0, 15.0);
+	EyeZ.AddTimeValue(3.0, 20.0);
+	EyeZ.AddTimeValue(4.0, 20.0);
+	EyeZ.AddTimeValue(5.0, 20.0);
+	EyeZ.AddTimeValue(6.0, 25.0);
+	EyeZ.AddTimeValue(7.0, 25.0);
+	EyeZ.AddTimeValue(8.0, 20.0);
+	EyeZ.AddTimeValue(9.0, 20.0);
+	EyeZ.AddTimeValue(10.0, 15.0);
 
 	// init the glew package (a window must be open to do this):
 
