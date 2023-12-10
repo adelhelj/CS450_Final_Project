@@ -18,6 +18,8 @@
 #include "glut.h"
 #include "keytime.h"
 
+int cameraMode = 0; // 0 = free camera, 1 = follow camera
+
 // title of these windows:
 
 const char *WINDOWTITLE = "CS450 Final Project - James Adelhelm";
@@ -437,8 +439,14 @@ Keytimes *SunPosX = new Keytimes();
 Keytimes *SunPosY = new Keytimes();
 Keytimes *SunPosZ = new Keytimes();
 
+// Create three instances of Keytimes for each sun RGB color component
+Keytimes *SunRed = new Keytimes();
+Keytimes *SunGreen = new Keytimes();
+Keytimes *SunBlue = new Keytimes();
+
+
 void InitSunPosition() {
-    float hugeNumber = 50.0f; // Adjust this value as needed
+    float hugeNumber = 100.0f; // Adjust this value as needed
 
     // Initialize Keytimes for X-axis (if the sun moves along X-axis)
     SunPosX->AddTimeValue(0.0f, 0.0f); // Start position
@@ -454,6 +462,24 @@ void InitSunPosition() {
     SunPosZ->AddTimeValue(0.0f, -hugeNumber); // Start position (far away)
     SunPosZ->AddTimeValue(0.5f, 0.0f); // Mid position (closest point)
     SunPosZ->AddTimeValue(1.0f, hugeNumber); // End position (far away again)
+
+	// Initialize Keytimes for sun color components to have sun red orange in beginning and end and yellow at top
+	// Sun Red component
+	SunRed->AddTimeValue(0.0f, 1.0f); // Start position (yellow - high red)
+	SunRed->AddTimeValue(0.5f, 1.0f); // Mid position (yellow-orange - higher red)
+	SunRed->AddTimeValue(1.0f, 1.0f); // End position (yellow - return to high red)
+
+	// Sun Green component
+	SunGreen->AddTimeValue(0.0f, 1.0f); // Start position (yellow - high green)
+	SunGreen->AddTimeValue(0.5f, 0.8f); // Mid position (yellow-orange - slightly less green)
+	SunGreen->AddTimeValue(1.0f, 1.0f); // End position (yellow - return to high green)
+
+	// Sun Blue component
+	SunBlue->AddTimeValue(0.0f, 0.0f); // Start position (yellow - no blue)
+	SunBlue->AddTimeValue(0.5f, 0.0f); // Mid position (yellow-orange - no blue)
+	SunBlue->AddTimeValue(1.0f, 0.0f); // End position (yellow - no blue)
+
+
 }
 
 void DrawSunPosition(float time) {
@@ -470,9 +496,11 @@ void DrawSunPosition(float time) {
     glTranslatef(sunPosX, sunPosY, sunPosZ);
 }
 
+
+
 void DrawSun(float time) {
-    // Set sun color to yellow
-    glColor3f(1.0f, 1.0f, 0.0f); // RGB for yellow
+    // set sun color to keytimes vals
+	glColor3f(SunRed->GetValue(time), SunGreen->GetValue(time), SunBlue->GetValue(time)); // RGB for sun color
     glPushMatrix();
     DrawSunPosition(Time);
     glutSolidSphere(5.0f, 20, 20); // Draw the sun as a sphere
@@ -930,11 +958,16 @@ Display( )
 	glLoadIdentity( );
 
 	// set the eye position, look-at position, and up-vector using keytimes variables for the positions that change over time
-	gluLookAt( EyeX.GetValue(eyenowTime	), EyeY.GetValue(eyenowTime	), EyeZ.GetValue(eyenowTime),     0.f, 0.f, 0.f,     0.f, 1.f, 0.f );
+	if (cameraMode == 0){
+		gluLookAt( EyeX.GetValue(eyenowTime), EyeY.GetValue(eyenowTime), EyeZ.GetValue(eyenowTime),     0.f, 0.f, 0.f,     0.f, 1.f, 0.f );
 
+	} else {
+		// normal camera 5 units y above but also viewing the windmill from the front
+		gluLookAt( 0.f, 5.f, 15.f,     0.f, 0.f, 0.f,     0.f, 1.f, 0.f );
 
+		
+	}
 	
-
 	// rotate the scene:
 
 	glRotatef( (GLfloat)Yrot, 0.f, 1.f, 0.f );
@@ -1420,6 +1453,12 @@ Keyboard( unsigned char c, int x, int y )
 
 	switch( c )
 	{
+		// cameraMode
+		case 'c':
+		case 'C':
+			cameraMode = !cameraMode;
+			break;
+
 		case 'o':
 		case 'O':
 			NowProjection = ORTHO;
