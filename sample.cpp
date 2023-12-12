@@ -308,38 +308,49 @@ void InitBuildingPositions() {
 }
 
 
-
 void DrawBuildings() {
 	glPushMatrix();
-    glDisable(GL_LIGHTING);  // Disable lighting
-    
-
-    for (int i = 0; i < 100; i++) {
-		Color color = floridaKeysColors[buildings[i].colorIndex];
+    glDisable(GL_LIGHTING);  // Disables lighting
+    for (int buildingIndex = 0; buildingIndex < 100; buildingIndex++) {
+		Color color = floridaKeysColors[buildings[buildingIndex].colorIndex];
         glPushMatrix();
-        // Translate to the building's location
-        glTranslatef(buildings[i].x, buildings[i].y + buildings[i].height * 0.5, buildings[i].z);
-        // Scale the cube to the building's width and height
-        glScalef(buildings[i].width, buildings[i].height, buildings[i].width);
+        // Translates to the building's location
+		float buildingX = buildings[buildingIndex].x;
+		float buildingY = buildings[buildingIndex].y;
+		float buildingZ = buildings[buildingIndex].z;
+        glTranslatef(buildingX, buildingY + buildings[buildingIndex].height * 0.5, buildingZ);
+        // Scales the cube to the building's width and height
+		float buildingWidth = buildings[buildingIndex].width;
+		float buildingIndHeight = buildings[buildingIndex].height;
+        glScalef(buildingWidth, buildingIndHeight, buildingWidth);
 		// set building color to grey white
-		glColor3f(color.r, color.g, color.b); // Set the building color
+		float redColor = color.r;
+		float greenColor = color.g;
+		float blueColor = color.b;
+		glColor3f(redColor, greenColor, blueColor); // Sets the building color
         // Draw the main building cube
         glutSolidCube(1.0f);
 
-        // Set roof color
-        glColor3f(0.5f, 0.5f, 0.5f); // RGB for grey
+        // Sets the roof color RGB values to the random color of next buildingIndex
+		float roofRed = color.r + 0.5f;
+		float roofGreen = color.g + 0.5f;
+		float roofBlue = color.b + 0.5f;
+	
+        glColor3f(roofRed, roofGreen, roofBlue); // RGB for roof colors
 
-        // Draw the roof
-        // Translate up by half the height of the building plus half the roof thickness
+        // Draws the roof
+        // Translates up by half the height of the building plus half the roof thickness
         glTranslatef(0.0f, 0.5f + 0.05f, 0.0f);
-        // Scale the roof to be slightly larger than the building, and flatter
-        glScalef(1.1f, 0.1f, 1.1f);
-        // Draw the roof cube
+        // Scales the roof to be slightly larger than the building, and flatter
+		float scaleVal = 1.1f;
+		float flatScaleVal = 0.1f;
+        glScalef(scaleVal, flatScaleVal, scaleVal);
+        // Draws the roof cube
         glutSolidCube(1.0f);
         glPopMatrix();
     }
 
-	glEnable(GL_LIGHTING);   // Re-enable lighting
+	glEnable(GL_LIGHTING);   // Re-enables lighting
     glPopMatrix();
 }
 
