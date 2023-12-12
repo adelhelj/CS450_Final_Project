@@ -391,8 +391,8 @@ void LoadGrassTexture(){
 	// path to grass texture file
 	char grassTextureFile[] = "dark_grass.bmp";
 
-	int width, height;
-	unsigned char *grassTextureData = BmpToTexture(grassTextureFile, &width, &height);
+	int grassWidth, grassHeight;
+	unsigned char *grassTextureData = BmpToTexture(grassTextureFile, &grassWidth, &grassHeight);
 	if (grassTextureData == NULL){
 		fprintf(stderr, "Unable to load the grass texture\n");
 		exit(1);
@@ -409,7 +409,7 @@ void LoadGrassTexture(){
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); // linear min filter
 
 	// sends the grass texture data to OpenGL
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, grassTextureData);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, grassWidth, grassHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, grassTextureData);
 
 	// clean up
 	delete[] grassTextureData;
@@ -1630,12 +1630,12 @@ InitLists( )
 	glEnable(GL_NORMALIZE);
 	glEnable(GL_COLOR_MATERIAL);
 
-	// Define Light Properties
+	// Defines Light Properties
     GLfloat lightPosition[] = {0.0f, 10.0f, -1.0f, 50.0f};  // light 50 y units above the origin
     GLfloat lightColor[] = {1.0f, 1.0f, 1.0f, 10000.0f};      // light color is white
 
-	// Set Up Light Source
-    glEnable(GL_LIGHT0);          // Use light source 0
+	// Sets Up Light Source
+    glEnable(GL_LIGHT0);          // Uses light source 0
     glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
     glLightfv(GL_LIGHT0, GL_DIFFUSE, lightColor);
     glLightfv(GL_LIGHT0, GL_SPECULAR, lightColor);
