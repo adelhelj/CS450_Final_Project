@@ -317,6 +317,8 @@ void InitBuildingPositions() {
 
 
 void DrawBuildings() {
+	glPushMatrix();
+    glDisable(GL_LIGHTING);  // Disable lighting
     
 
     for (int i = 0; i < 100; i++) {
@@ -343,6 +345,9 @@ void DrawBuildings() {
         glutSolidCube(1.0f);
         glPopMatrix();
     }
+
+	glEnable(GL_LIGHTING);   // Re-enable lighting
+    glPopMatrix();
 }
 
 
@@ -778,22 +783,29 @@ Keytimes *SkyGreen = new Keytimes();
 Keytimes *SkyBlue = new Keytimes();
 
 void InitSkybox() {
-    // Initialize Keytimes for sky color components to simulate sunrise, midday, and sunset
+    // Initialize Keytimes for sky color components to simulate sunrise, midday, sunset, and back to sunrise
     // Sky Red component
     SkyRed->AddTimeValue(0.0f, 0.2f); // Sunrise - more red
-    SkyRed->AddTimeValue(0.5f, 0.53f); // Midday - sky blue
-    SkyRed->AddTimeValue(1.0f, 0.2f); // Sunset - more red
+    SkyRed->AddTimeValue(0.25f, 0.53f); // Midday - sky blue
+    SkyRed->AddTimeValue(0.5f, 0.2f); // Sunset - more red
+    SkyRed->AddTimeValue(0.75f, 0.53f); // Midday - sky blue
+    SkyRed->AddTimeValue(1.0f, 0.2f); // Back to sunrise - more red
 
     // Sky Green component
     SkyGreen->AddTimeValue(0.0f, 0.3f); // Sunrise - less green
-    SkyGreen->AddTimeValue(0.5f, 0.81f); // Midday - sky blue
-    SkyGreen->AddTimeValue(1.0f, 0.3f); // Sunset - less green
+    SkyGreen->AddTimeValue(0.25f, 0.81f); // Midday - sky blue
+    SkyGreen->AddTimeValue(0.5f, 0.3f); // Sunset - less green
+    SkyGreen->AddTimeValue(0.75f, 0.81f); // Midday - sky blue
+    SkyGreen->AddTimeValue(1.0f, 0.3f); // Back to sunrise - less green
 
     // Sky Blue component
     SkyBlue->AddTimeValue(0.0f, 0.5f); // Sunrise - less blue
-    SkyBlue->AddTimeValue(0.5f, 0.92f); // Midday - sky blue
-    SkyBlue->AddTimeValue(1.0f, 0.5f); // Sunset - less blue
+    SkyBlue->AddTimeValue(0.25f, 0.92f); // Midday - sky blue
+    SkyBlue->AddTimeValue(0.5f, 0.5f); // Sunset - less blue
+    SkyBlue->AddTimeValue(0.75f, 0.92f); // Midday - sky blue
+    SkyBlue->AddTimeValue(1.0f, 0.5f); // Back to sunrise - less blue
 }
+
 
 
 void DrawSkybox() {
