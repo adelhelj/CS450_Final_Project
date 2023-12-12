@@ -632,9 +632,9 @@ void DrawLand(){
     // draw the land quad with texture coordinates
     glBegin(GL_QUADS);
         glTexCoord2f(0.0f, 0.0f); glVertex3f(-1000.0f, 0.0f, 1000.0f);
-        glTexCoord2f(1.0f, 0.0f); glVertex3f(1000.0f, 0.0f, 1000.0f);
-        glTexCoord2f(1.0f, 1.0f); glVertex3f(1000.0f, 0.0f, -1000.0f);
-        glTexCoord2f(0.0f, 1.0f); glVertex3f(-1000.0f, 0.0f, -1000.0f);
+        glTexCoord2f(0.0f, 100.0f); glVertex3f(-1000.0f, 0.0f, -1000.0f);
+        glTexCoord2f(100.0f, 100.0f); glVertex3f(1000.0f, 0.0f, -1000.0f);
+        glTexCoord2f(100.0f, 0.0f); glVertex3f(1000.0f, 0.0f, 1000.0f);
     glEnd();
 
     glDisable(GL_TEXTURE_2D); // Disable texturing
