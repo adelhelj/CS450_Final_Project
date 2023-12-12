@@ -772,6 +772,30 @@ void DrawWindmill() {
 	
 }
 
+// skybox RGB keytimes values, starts at dark evening when sun is below xyz plane and works to cyan when sun is overhead
+Keytimes *SkyRed = new Keytimes();
+Keytimes *SkyGreen = new Keytimes();
+Keytimes *SkyBlue = new Keytimes();
+
+void InitSkybox() {
+    // Initialize Keytimes for sky color components to simulate sunrise, midday, and sunset
+    // Sky Red component
+    SkyRed->AddTimeValue(0.0f, 0.2f); // Sunrise - more red
+    SkyRed->AddTimeValue(0.5f, 0.53f); // Midday - sky blue
+    SkyRed->AddTimeValue(1.0f, 0.2f); // Sunset - more red
+
+    // Sky Green component
+    SkyGreen->AddTimeValue(0.0f, 0.3f); // Sunrise - less green
+    SkyGreen->AddTimeValue(0.5f, 0.81f); // Midday - sky blue
+    SkyGreen->AddTimeValue(1.0f, 0.3f); // Sunset - less green
+
+    // Sky Blue component
+    SkyBlue->AddTimeValue(0.0f, 0.5f); // Sunrise - less blue
+    SkyBlue->AddTimeValue(0.5f, 0.92f); // Midday - sky blue
+    SkyBlue->AddTimeValue(1.0f, 0.5f); // Sunset - less blue
+}
+
+
 void DrawSkybox() {
 	glPushMatrix();
     glDisable(GL_LIGHTING);  // Disable lighting
@@ -786,7 +810,7 @@ void DrawSkybox() {
     glBegin(GL_QUADS);
 
     // Set the color to sky blue
-    glColor3f(0.53f, 0.81f, 0.92f);  // RGB for sky blue
+    glColor3f(SkyRed->GetValue(Time), SkyGreen->GetValue(Time), SkyBlue->GetValue(Time)); // RGB for sky blue
 
     // Top face
     glVertex3f(-size, size, -size);
@@ -868,6 +892,7 @@ main( int argc, char *argv[ ] )
 	// setup all the user interface stuff:
 
 	InitMenus( );
+	InitSkybox();
 	InitBuildingPositions();
 	InitSunPosition();
 	InitCloudPositions();
@@ -1492,7 +1517,7 @@ InitLists( )
 
 	// Define Light Properties
     GLfloat lightPosition[] = {0.0f, 10.0f, -1.0f, 50.0f};  // light 50 y units above the origin
-    GLfloat lightColor[] = {1.0f, 1.0f, 1.0f, 1000.0f};      // light color is white
+    GLfloat lightColor[] = {1.0f, 1.0f, 1.0f, 10000.0f};      // light color is white
 
 	// Set Up Light Source
     glEnable(GL_LIGHT0);          // Use light source 0
@@ -1526,11 +1551,6 @@ Keyboard( unsigned char c, int x, int y )
 			cameraMode = !cameraMode;
 			break;
 
-		case 'o':
-        case 'O':
-            NowProjection = ORTHO;
-            break;
-
         case 'p':
         case 'P':
             currentLightType = POINT_LIGHT;
@@ -1548,60 +1568,10 @@ Keyboard( unsigned char c, int x, int y )
             DoMainMenu(QUIT); // will not return here
             break;            // happy compiler
 
-        case 'w':
-            currentLightColor = 0; // White
-            break;
-        case 'r':
-            currentLightColor = 1; // Red
-            break;
-        case 'g':
-            currentLightColor = 2; // Green
-            break;
-        case 'b':
-            currentLightColor = 3; // Blue
-            break;
-        case 'y':
-            currentLightColor = 4; // Yellow
-            break;
+
 
 		default:
 			fprintf( stderr, "Don't know what to do with keyboard hit: '%c' (0x%0x)\n", c, c );
-	// Update the light source color based on the currentLightColor variable
-    GLfloat lightColor[] = {1.0f, 0.0f, 0.0f, 1.0f}; // Default to white
-    switch (currentLightColor)
-    {
-        case 0: // White
-            lightColor[0] = 1.0f;
-            lightColor[1] = 1.0f;
-            lightColor[2] = 1.0f;
-			glColor3f(1.0f, 1.0f, 1.0f);
-            break;
-        case 1: // Red
-            lightColor[0] = 1.0f;
-			lightColor[1] = 0.0f;
-			lightColor[2] = 0.0f;
-			glColor3f(1.0f, 0.0f, 0.0f);
-            break;
-        case 2: // Green
-			lightColor[0] = 0.0f;
-            lightColor[1] = 1.0f;
-			lightColor[2] = 0.0f;
-			glColor3f(0.0f, 1.0f, 0.0f);
-            break;
-        case 3: // Blue
-			lightColor[0] = 0.0f;
-			lightColor[1] = 0.0f;
-            lightColor[2] = 1.0f;
-			glColor3f(0.0f, 0.0f, 1.0f);
-            break;
-        case 4: // Yellow
-            lightColor[0] = 1.0f;
-            lightColor[1] = 1.0f;
-			lightColor[2] = 0.0f;
-			glColor3f(1.0f, 1.0f, 0.0f);
-            break;
-    }
-    glLightfv(GL_LIGHT0, GL_DIFFUSE, lightColor);
 
     // Force a call to Display():
     glutSetWindow(MainWindow);
