@@ -770,108 +770,120 @@ void DrawWindmillTowerTop() {
 	glPushMatrix();
     glDisable(GL_LIGHTING);  // Disable lighting
 
-    float baseRadius = 0.3f; // Match this with the top width of the tower
-    float topRadius = 0.05f; // Smaller radius for the top of the cone
-    float height = 0.5f; // Height of the cone
-    int slices = 20; // Number of subdivisions around the Z axis
-    int stacks = 20; // Number of subdivisions along the Z axis
+    float baseRadius = 0.3f; // This must match top width of the tower
+    float topRadius = 0.05f; // Smaller radius at the top of the cone
+    float heightCone = 0.5f; // Height of the cone
+    int coneSlices = 20; // Number of subdivisions around the Z axis
+    int coneStacks = 20; // Number of subdivisions along the Z axis
 
     // Cone base
     GLUquadric* quad = gluNewQuadric();
     glPushMatrix();
     glTranslatef(0.0f, 2.0f, 0.0f); // Translate to the top of the tower
-    glRotatef(-90, 1.0f, 0.0f, 0.0f); // Orient the cone correctly
-	// Set the cone color to brown that contrasts cream white
+    glRotatef(-90, 1.0f, 0.0f, 0.0f); // Orients the cone on top of the tower
 	glColor3f(0.6f, 0.4f, 0.2f); // RGB for brown
-	
-    
-    gluCylinder(quad, baseRadius, topRadius, height, slices, stacks);
+    gluCylinder(quad, baseRadius, topRadius, heightCone, coneSlices, coneStacks);
     
     // Cone cap
     gluQuadricOrientation(quad, GLU_INSIDE);
-    gluDisk(quad, 0.0f, baseRadius, slices, 1); // Draw top cap
+    gluDisk(quad, 0.0f, baseRadius, coneSlices, 1); // Draws the top cap
     glPopMatrix();
     gluDeleteQuadric(quad);
-	glEnable(GL_LIGHTING);   // Re-enable lighting
+	glEnable(GL_LIGHTING);   // Re-enables lighting
     glPopMatrix();
 }
 
 
 void DrawWindmillTower() {
 	glPushMatrix();
-    glDisable(GL_LIGHTING);  // Disable lighting
+    glDisable(GL_LIGHTING);  // Disables lighting
 
-    float baseWidth = 0.5f;
-    float topWidth = 0.3f;
-    float height = 2.0f;
-    int numSides = 4; // Simple rectangular shape
+    float windmillTowerBaseWidth = 0.5f;
+    float windmillTowerTopWidth = 0.3f;
+    float windmillTowerHeight = 2.0f;
+    int numSides = 4; // Creates a rectangle shape
 
     glBegin(GL_QUADS);
 	// set windmill tower color to a dark grey blue
 	glColor3f(0.0f, 0.0f, 0.2f); // RGB for dark grey blue
 	
 	
-    for (int i = 0; i < numSides; ++i) {
-        float angle = 2.0f * M_PI * i / numSides;
-        float nextAngle = 2.0f * M_PI * (i + 1) / numSides;
+    for (int towerIndex = 0; towerIndex < numSides; ++towerIndex) {
+        float angle = 2.0f * M_PI * towerIndex / numSides;
+        float nextAngle = 2.0f * M_PI * (towerIndex + 1) / numSides;
         // Bottom vertices
-        glVertex3f(baseWidth * cos(angle), baseWidth * sin(angle), 0.0f);
-        glVertex3f(baseWidth * cos(nextAngle), baseWidth * sin(nextAngle), 0.0f);
-        // Top vertices
-        glVertex3f(topWidth * cos(nextAngle), topWidth * sin(nextAngle), height);
-        glVertex3f(topWidth * cos(angle), topWidth * sin(angle), height);
+		float towerVertX1 = windmillTowerBaseWidth * cos(angle);
+		float towerVertY1 = windmillTowerBaseWidth * sin(angle);
+		float towerVertZ1 = 0.0f;
+        glVertex3f(towerVertX1, towerVertY1, towerVertZ1);
+
+		float towerVertX2 = windmillTowerBaseWidth * cos(nextAngle);
+		float towerVertY2 = windmillTowerBaseWidth * sin(nextAngle);
+		float towerVertZ2 = 0.0f;
+        glVertex3f(towerVertX2, towerVertY2, towerVertZ2);
+        
+		// Top vertices
+		float towerVertX3 = windmillTowerTopWidth * cos(nextAngle);
+		float towerVertY3 = windmillTowerTopWidth * sin(nextAngle);
+		float towerVertZ3 = windmillTowerHeight;
+        glVertex3f(towerVertX3, towerVertY3, towerVertZ3);
+        
+		
+		float towerVertX4 = windmillTowerTopWidth * cos(angle);
+		float towerVertY4 = windmillTowerTopWidth * sin(angle);
+		float towerVertZ4 = windmillTowerHeight;
+		glVertex3f(towerVertX4, towerVertY4, towerVertZ4);
 
     }
     glEnd();
-	glEnable(GL_LIGHTING);   // Re-enable lighting
+	glEnable(GL_LIGHTING);   // Re-enables lighting
     glPopMatrix();
 }
 
 
 void DrawWindmillBlade() {
-    float width = 0.1f;
-    float length = 1.0f;
+    float bladeWidth = 0.1f;
+    float bladeLength = 1.0f;
 
     glBegin(GL_QUADS);
     glVertex3f(0.0f, 0.0f, 0.0f);
-    glVertex3f(0.0f, width, 0.0f);
-    glVertex3f(length, width, 0.0f);
-    glVertex3f(length, 0.0f, 0.0f);
+    glVertex3f(0.0f, bladeWidth, 0.0f);
+    glVertex3f(bladeLength, bladeWidth, 0.0f);
+    glVertex3f(bladeLength, 0.0f, 0.0f);
     glEnd();
 }
 
 
 void DrawWindmillBlades() {
 	glPushMatrix();
-    glDisable(GL_LIGHTING);  // Disable lighting
+    glDisable(GL_LIGHTING);  // Disables lighting
     int numBlades = 4;
-	// set windmill blade color to white
+	// sets windmill blade color to white
 	glColor3f(1.0f, 1.0f, 1.0f);  // RGB for white
-    for (int i = 0; i < numBlades; ++i) {
+    for (int bladeIndex = 0; bladeIndex < numBlades; ++bladeIndex) {
         glPushMatrix();
 		// move blades a lil further out towards z
 		glTranslatef(0.0f, 0.0f, 0.115f);
-        glRotatef(bladeAngle, 0.0f, 0.0f, 1.0f); // Rotate the blades based on bladeAngle
-        glRotatef(i * (360.0f / numBlades), 0.0f, 0.0f, 1.0f);
+        glRotatef(bladeAngle, 0.0f, 0.0f, 1.0f); // Rotates the blades based on bladeAngle
+        glRotatef(bladeIndex * (360.0f / numBlades), 0.0f, 0.0f, 1.0f);
         DrawWindmillBlade();
         glPopMatrix();
     }
-	glEnable(GL_LIGHTING);   // Re-enable lighting
+	glEnable(GL_LIGHTING);   // Re-enables lighting
     glPopMatrix();
 }
 
 
 void DrawWindmill() {
-	
-    // Draw Tower
+    // Draws Windmill Tower
     glPushMatrix();
     glRotatef(270.0f, 1.0f, 0.0f, 0.0f); // Rotate 270 degrees around the X-axis
     DrawWindmillTower();
     glPopMatrix();
 
-    // Draw Blades
+    // Draws Windmill Blades
     glPushMatrix();
-    glTranslatef(0.0f, 2.0f, 0.35f); // Adjust blade position to top of the tower
+    glTranslatef(0.0f, 2.0f, 0.35f); // Adjusts blade position to top of the tower
     DrawWindmillBlades();
     glPopMatrix();
 	
@@ -884,98 +896,92 @@ Keytimes *SkyBlue = new Keytimes();
 
 void InitSkybox() {
     // Initialize Keytimes for sky color components to simulate sunrise, midday, sunset, and back to sunrise
-    // Sky Red component
-    SkyRed->AddTimeValue(0.0f, 0.2f); // Sunrise - more red
-    SkyRed->AddTimeValue(0.25f, 0.53f); // Midday - sky blue
-    SkyRed->AddTimeValue(0.5f, 0.2f); // Sunset - more red
-    SkyRed->AddTimeValue(0.75f, 0.53f); // Midday - sky blue
-    SkyRed->AddTimeValue(1.0f, 0.2f); // Back to sunrise - more red
+    // Sky Red keytimes component values
+    SkyRed->AddTimeValue(0.0f, 0.2f); // Sunrise
+    SkyRed->AddTimeValue(0.25f, 0.53f); // Midday 
+    SkyRed->AddTimeValue(0.5f, 0.2f); // Sunset 
+    SkyRed->AddTimeValue(0.75f, 0.53f); // Midday
+    SkyRed->AddTimeValue(1.0f, 0.2f); // Sunrise
 
-    // Sky Green component
-    SkyGreen->AddTimeValue(0.0f, 0.3f); // Sunrise - less green
-    SkyGreen->AddTimeValue(0.25f, 0.81f); // Midday - sky blue
-    SkyGreen->AddTimeValue(0.5f, 0.3f); // Sunset - less green
-    SkyGreen->AddTimeValue(0.75f, 0.81f); // Midday - sky blue
-    SkyGreen->AddTimeValue(1.0f, 0.3f); // Back to sunrise - less green
+    // Sky Green keytimes component values
+    SkyGreen->AddTimeValue(0.0f, 0.3f); // Sunrise
+    SkyGreen->AddTimeValue(0.25f, 0.81f); // Midday 
+    SkyGreen->AddTimeValue(0.5f, 0.3f); // Sunset 
+    SkyGreen->AddTimeValue(0.75f, 0.81f); // Midday 
+    SkyGreen->AddTimeValue(1.0f, 0.3f); // Sunrise
 
-    // Sky Blue component
-    SkyBlue->AddTimeValue(0.0f, 0.5f); // Sunrise - less blue
-    SkyBlue->AddTimeValue(0.25f, 0.92f); // Midday - sky blue
-    SkyBlue->AddTimeValue(0.5f, 0.5f); // Sunset - less blue
-    SkyBlue->AddTimeValue(0.75f, 0.92f); // Midday - sky blue
-    SkyBlue->AddTimeValue(1.0f, 0.5f); // Back to sunrise - less blue
+    // Sky Blue keytimes component values
+    SkyBlue->AddTimeValue(0.0f, 0.5f); // Sunrise
+    SkyBlue->AddTimeValue(0.25f, 0.92f); // Midday 
+    SkyBlue->AddTimeValue(0.5f, 0.5f); // Sunset 
+    SkyBlue->AddTimeValue(0.75f, 0.92f); // Midday 
+    SkyBlue->AddTimeValue(1.0f, 0.5f); // Back to sunrise 
 }
 
 
 
 void DrawSkybox() {
-	glPushMatrix();
-    glDisable(GL_LIGHTING);  // Disable lighting
+    glPushMatrix();
+    glDisable(GL_LIGHTING);  // Disables lighting
 
-    // Size of the skybox - should be large enough to encompass the whole scene
-    float size = 100.0f; 
+    // Size of the skybox
+    float skyboxSize = 100.0f; 
 
-    // Disable depth writing
+    // Disables depth writing
     glDepthMask(GL_FALSE);  
 
-    // Start drawing the skybox
+    // Starts drawing the skybox using a quad box shape
     glBegin(GL_QUADS);
 
-    // Set the color to sky blue
+    // Sets the color based on the keytime values at Time
     glColor3f(SkyRed->GetValue(Time), SkyGreen->GetValue(Time), SkyBlue->GetValue(Time)); // RGB for sky blue
 
-    // Top face
-    glVertex3f(-size, size, -size);
-    glVertex3f(-size, size, size);
-    glVertex3f(size, size, size);
-    glVertex3f(size, size, -size);
+    // Top face of skybox
+    glVertex3f(-skyboxSize, skyboxSize, -skyboxSize);
+    glVertex3f(-skyboxSize, skyboxSize, skyboxSize);
+    glVertex3f(skyboxSize, skyboxSize, skyboxSize);
+    glVertex3f(skyboxSize, skyboxSize, -skyboxSize);
 
-    // Bottom face
-    glVertex3f(-size, -size, -size);
-    glVertex3f(size, -size, -size);
-    glVertex3f(size, -size, size);
-    glVertex3f(-size, -size, size);
+    // Bottom face of skybox
+    glVertex3f(-skyboxSize, -skyboxSize, -skyboxSize);
+    glVertex3f(skyboxSize, -skyboxSize, -skyboxSize);
+    glVertex3f(skyboxSize, -skyboxSize, skyboxSize);
+    glVertex3f(-skyboxSize, -skyboxSize, skyboxSize);
 
-    // Four sides
-    glVertex3f(-size, -size, size);
-    glVertex3f(size, -size, size);
-    glVertex3f(size, size, size);
-    glVertex3f(-size, size, size);
+    // Four sides of skybox
+    glVertex3f(-skyboxSize, -skyboxSize, skyboxSize);
+    glVertex3f(skyboxSize, -skyboxSize, skyboxSize);
+    glVertex3f(skyboxSize, skyboxSize, skyboxSize);
+    glVertex3f(-skyboxSize, skyboxSize, skyboxSize);
 
-    glVertex3f(size, -size, -size);
-    glVertex3f(-size, -size, -size);
-    glVertex3f(-size, size, -size);
-    glVertex3f(size, size, -size);
+    glVertex3f(skyboxSize, -skyboxSize, -skyboxSize);
+    glVertex3f(-skyboxSize, -skyboxSize, -skyboxSize);
+    glVertex3f(-skyboxSize, skyboxSize, -skyboxSize);
+    glVertex3f(skyboxSize, skyboxSize, -skyboxSize);
 
-    glVertex3f(-size, -size, -size);
-    glVertex3f(-size, -size, size);
-    glVertex3f(-size, size, size);
-    glVertex3f(-size, size, -size);
+    glVertex3f(-skyboxSize, -skyboxSize, -skyboxSize);
+    glVertex3f(-skyboxSize, -skyboxSize, skyboxSize);
+    glVertex3f(-skyboxSize, skyboxSize, skyboxSize);
+    glVertex3f(-skyboxSize, skyboxSize, -skyboxSize);
 
-    glVertex3f(size, -size, size);
-    glVertex3f(size, -size, -size);
-    glVertex3f(size, size, -size);
-    glVertex3f(size, size, size);
+    glVertex3f(skyboxSize, -skyboxSize, skyboxSize);
+    glVertex3f(skyboxSize, -skyboxSize, -skyboxSize);
+    glVertex3f(skyboxSize, skyboxSize, -skyboxSize);
+    glVertex3f(skyboxSize, skyboxSize, skyboxSize);
 
     glEnd();
 
-    // Re-enable depth writing
+    // Re-enables depth writing
     glDepthMask(GL_TRUE);
 
-	glEnable(GL_LIGHTING);   // Re-enable lighting
+    glEnable(GL_LIGHTING);   // Re-enables lighting
     glPopMatrix();
 }
 
 
 
 
-
-
-
-
-
 // main program:
-
 int
 main( int argc, char *argv[ ] )
 {
@@ -1051,10 +1057,6 @@ Animate( )
 	glutSetWindow( MainWindow );
 	glutPostRedisplay( );
 }
-
-float lightRadius = 10.0f;  // Radius of the circular path
-float lightAngle = 0.0f;   // Current angle of the light source in radians
-float angularSpeed = 0.01f;  // Angular speed for circular motion
 
 
 Keytimes EyeX;
@@ -1639,12 +1641,12 @@ InitLists( )
     glLightfv(GL_LIGHT0, GL_SPECULAR, lightColor);
 
 	// create the axes:
-	AxesList = glGenLists( 1 );
-	glNewList( AxesList, GL_COMPILE );
-		glLineWidth( AXES_WIDTH );
-			Axes( 1.5 );
-		glLineWidth( 1. );
-	glEndList( );
+	// AxesList = glGenLists( 1 );
+	// glNewList( AxesList, GL_COMPILE );
+	// 	glLineWidth( AXES_WIDTH );
+	// 		Axes( 1.5 );
+	// 	glLineWidth( 1. );
+	// glEndList( );
 }
 
 
