@@ -505,56 +505,57 @@ Keytimes *SunBlue = new Keytimes();
 
 
 void InitSunPosition() {
-    float hugeNumber = 100.0f; // Adjust this value as needed
+    float sunTravelDistVal = 100.0f; 
 
-    // Initialize Keytimes for X-axis (if the sun moves along X-axis)
+    // Initializes Keytimes for X-axis 
     SunPosX->AddTimeValue(0.0f, 0.0f); // Start position
     SunPosX->AddTimeValue(0.5f, 0.0f); // Mid position
     SunPosX->AddTimeValue(1.0f, 0.0f); // End position
 
-    // Initialize Keytimes for Y-axis
-    SunPosY->AddTimeValue(0.0f, 0.0f); // Start position (below the horizon)
-    SunPosY->AddTimeValue(0.5f, hugeNumber); // Mid position (above the horizon)
-    SunPosY->AddTimeValue(1.0f, 0.0f); // End position (back below the horizon)
+    // Initializes Keytimes for Y-axis
+    SunPosY->AddTimeValue(0.0f, 0.0f); // Start position 
+    SunPosY->AddTimeValue(0.5f, sunTravelDistVal); // Middle position 
+    SunPosY->AddTimeValue(1.0f, 0.0f); // End position 
 
     // Initialize Keytimes for Z-axis
-    SunPosZ->AddTimeValue(0.0f, -hugeNumber); // Start position (far away)
-    SunPosZ->AddTimeValue(0.5f, 0.0f); // Mid position (closest point)
-    SunPosZ->AddTimeValue(1.0f, hugeNumber); // End position (far away again)
+    SunPosZ->AddTimeValue(0.0f, -sunTravelDistVal); // Start position 
+    SunPosZ->AddTimeValue(0.5f, 0.0f); // Mid position 
+    SunPosZ->AddTimeValue(1.0f, sunTravelDistVal); // End position 
 
-	// Initialize Keytimes for sun color components to have sun red orange in beginning and end and yellow at top
+	// Initialize Keytimes for sun color components 
 	// Sun Red component
-	SunRed->AddTimeValue(0.0f, 1.0f); // Sunrise - less intense red
-    SunRed->AddTimeValue(0.25f, 1.0f); // Approach midday - still red
-    SunRed->AddTimeValue(0.5f, 1.0f); // Midday - pure yellow (high red component)
-    SunRed->AddTimeValue(0.75f, 1.0f); // Leaving midday - still red
-    SunRed->AddTimeValue(1.0f, 1.0f); // Sunset - less intense red
+	SunRed->AddTimeValue(0.0f, 1.0f); // Sunrise
+    SunRed->AddTimeValue(0.25f, 1.0f); 
+    SunRed->AddTimeValue(0.5f, 1.0f); // Middle of the day
+    SunRed->AddTimeValue(0.75f, 1.0f); 
+    SunRed->AddTimeValue(1.0f, 1.0f); // Sunset 
 
-    // Sun Green component - reduced green at sunrise and sunset for a warmer hue
-    SunGreen->AddTimeValue(0.0f, 0.8f); // Sunrise - warmer hue
-    SunGreen->AddTimeValue(0.25f, 0.8f); // Approach midday - typical green level
-    SunGreen->AddTimeValue(0.5f, 1.0f); // Midday - pure yellow (full green component)
-    SunGreen->AddTimeValue(0.75f, 0.8f); // Leaving midday - typical green level
-    SunGreen->AddTimeValue(1.0f, 0.8f); // Sunset - warmer hue
+    // Sun Green component 
+    SunGreen->AddTimeValue(0.0f, 0.8f); // Sunrise 
+    SunGreen->AddTimeValue(0.25f, 0.8f); 
+    SunGreen->AddTimeValue(0.5f, 1.0f); // Middle of the day
+    SunGreen->AddTimeValue(0.75f, 0.8f); 
+    SunGreen->AddTimeValue(1.0f, 0.8f); // Sunset
 
-    // Sun Blue component - no blue to emphasize the red and yellow colors for sunrise and sunset, and yellow for midday
-    SunBlue->AddTimeValue(0.0f, 0.0f); // Sunrise - no blue
-    SunBlue->AddTimeValue(0.25f, 0.0f); // Approach midday - no blue
-    SunBlue->AddTimeValue(0.5f, 0.0f); // Midday - pure yellow (no blue component)
-    SunBlue->AddTimeValue(0.75f, 0.0f); // Leaving midday - no blue
-    SunBlue->AddTimeValue(1.0f, 0.0f); // Sunset - no blue
+    // Sun Blue component - is not used
+    SunBlue->AddTimeValue(0.0f, 0.0f); 
+    SunBlue->AddTimeValue(0.25f, 0.0f);
+    SunBlue->AddTimeValue(0.5f, 0.0f); 
+    SunBlue->AddTimeValue(0.75f, 0.0f); 
+    SunBlue->AddTimeValue(1.0f, 0.0f); 
 }
 
 void DrawSunPosition(float time) {
-    // Convert linear time to ping-pong time
-    float pingPongTime = 1.0f - fabsf(2.0f * time - 1.0f);
+    // Converts linear time to ping-pong time for sun movemenbts
+	float pingPongVal = fabsf(2.0f * time - 1.0f);
+    float pingPongTime = 1.0f - pingPongVal;
 
-    // Get interpolated values for each axis using ping-pong time
+    // Gets keytime values for sun position
     float sunPosX = SunPosX->GetValue(pingPongTime);
     float sunPosY = SunPosY->GetValue(pingPongTime);
     float sunPosZ = SunPosZ->GetValue(pingPongTime);
 
-    // Apply the translation to move the sun
+    // Applies translation to move the sun according to keytimes values
     glTranslatef(sunPosX, sunPosY, sunPosZ);
 }
 
@@ -562,15 +563,15 @@ void DrawSunPosition(float time) {
 
 void DrawSun(float time) {
 	glPushMatrix();
-    glDisable(GL_LIGHTING);  // Disable lighting
-    // set sun color to keytimes vals
+    glDisable(GL_LIGHTING);  // Disables lighting
+    // sets the sun color to keytimes vals
 	glColor3f(SunRed->GetValue(time), SunGreen->GetValue(time), SunBlue->GetValue(time)); // RGB for sun color
     glPushMatrix();
     DrawSunPosition(Time);
-    glutSolidSphere(5.0f, 20, 20); // Draw the sun as a sphere
+    glutSolidSphere(5.0f, 20, 20); // Draws the sun as a sphere
 	glDisable(GL_TEXTURE_2D);
     glPopMatrix();
-	glEnable(GL_LIGHTING);   // Re-enable lighting
+	glEnable(GL_LIGHTING);   // Re-enables lighting
     glPopMatrix();
 }
 
