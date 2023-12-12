@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
-#include "common.h"
+#include "common.h" // include the common header file
 
 #define _USE_MATH_DEFINES
 #include <math.h>
@@ -756,7 +756,7 @@ void DrawLargeRainbow() {
     }
 
     glPopMatrix();
-    glDisable(GL_BLEND);     // Disable blending after drawing the rainbow
+    glDisable(GL_BLEND);     // Disables blending after drawing the rainbow
     glEnable(GL_LIGHTING);   // Re-enables lighting
 }
 
