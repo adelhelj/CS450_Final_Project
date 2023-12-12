@@ -424,6 +424,10 @@ void DrawBeachAndOcean() {
 	glPushMatrix();
     glDisable(GL_LIGHTING);  // Disable lighting
 
+	// Number of times to repeat the texture
+    const float textureRepeatWidth = 30.0f;
+    const float textureRepeatDepth = 300.0f;
+
     // Bind the sand texture
     glBindTexture(GL_TEXTURE_2D, beachTextureId);
     glEnable(GL_TEXTURE_2D);
@@ -434,9 +438,9 @@ void DrawBeachAndOcean() {
     // Draw the beach quad with texture coordinates
     glBegin(GL_QUADS);
         glTexCoord2f(0.0f, 0.0f); glVertex3f(-BEACH_WIDTH / 2, WATER_LEVEL, BEACH_START_Z);
-        glTexCoord2f(1.0f, 0.0f); glVertex3f(BEACH_WIDTH / 2, WATER_LEVEL, BEACH_START_Z);
-        glTexCoord2f(1.0f, 1.0f); glVertex3f(BEACH_WIDTH / 2, WATER_LEVEL, BEACH_START_Z + BEACH_DEPTH);
-        glTexCoord2f(0.0f, 1.0f); glVertex3f(-BEACH_WIDTH / 2, WATER_LEVEL, BEACH_START_Z + BEACH_DEPTH);
+        glTexCoord2f(textureRepeatWidth, 0.0f); glVertex3f(BEACH_WIDTH / 2, WATER_LEVEL, BEACH_START_Z);
+        glTexCoord2f(textureRepeatWidth, textureRepeatDepth); glVertex3f(BEACH_WIDTH / 2, WATER_LEVEL, BEACH_START_Z + BEACH_DEPTH);
+        glTexCoord2f(0.0f, textureRepeatDepth); glVertex3f(-BEACH_WIDTH / 2, WATER_LEVEL, BEACH_START_Z + BEACH_DEPTH);
     glEnd();
 
     glDisable(GL_TEXTURE_2D);
@@ -625,17 +629,26 @@ void DrawLand(){
     glPushMatrix();
     glDisable(GL_LIGHTING);  // Disable lighting
 
-    // bind the grass texture
+    // Number of times to repeat the texture
+    const float textureRepeatX = 50.0f; // Repeat 50 times along the X-axis
+    const float textureRepeatZ = 50.0f; // Repeat 50 times along the Z-axis
+
+    // Bind the grass texture
     glBindTexture(GL_TEXTURE_2D, grassTextureId);
     glEnable(GL_TEXTURE_2D);
 
-    // draw the land quad with texture coordinates
+    // Set the grass color to green and bind the texture
+    glColor3f(0.0f, 0.5f, 0.0f); // green color
+
+    // Draw the land quad with repeated texture coordinates
     glBegin(GL_QUADS);
         glTexCoord2f(0.0f, 0.0f); glVertex3f(-1000.0f, 0.0f, 1000.0f);
-        glTexCoord2f(0.0f, 100.0f); glVertex3f(-1000.0f, 0.0f, -1000.0f);
-        glTexCoord2f(100.0f, 100.0f); glVertex3f(1000.0f, 0.0f, -1000.0f);
-        glTexCoord2f(100.0f, 0.0f); glVertex3f(1000.0f, 0.0f, 1000.0f);
+        glTexCoord2f(textureRepeatX, 0.0f); glVertex3f(1000.0f, 0.0f, 1000.0f);
+        glTexCoord2f(textureRepeatX, textureRepeatZ); glVertex3f(1000.0f, 0.0f, -1000.0f);
+        glTexCoord2f(0.0f, textureRepeatZ); glVertex3f(-1000.0f, 0.0f, -1000.0f);
     glEnd();
+
+    glDisable(GL_TEXTURE_2D);
 
     glDisable(GL_TEXTURE_2D); // Disable texturing
     glEnable(GL_LIGHTING);    // Re-enable lighting
@@ -649,6 +662,9 @@ void DrawLand(){
 float bladeAngle = 0.0f; // Global variable for blade angle
 
 void DrawWindmillTowerTop() {
+	glPushMatrix();
+    glDisable(GL_LIGHTING);  // Disable lighting
+
     float baseRadius = 0.3f; // Match this with the top width of the tower
     float topRadius = 0.05f; // Smaller radius for the top of the cone
     float height = 0.5f; // Height of the cone
@@ -671,11 +687,15 @@ void DrawWindmillTowerTop() {
     gluDisk(quad, 0.0f, baseRadius, slices, 1); // Draw top cap
     glPopMatrix();
     gluDeleteQuadric(quad);
-
+	glEnable(GL_LIGHTING);   // Re-enable lighting
+    glPopMatrix();
 }
 
 
 void DrawWindmillTower() {
+	glPushMatrix();
+    glDisable(GL_LIGHTING);  // Disable lighting
+
     float baseWidth = 0.5f;
     float topWidth = 0.3f;
     float height = 2.0f;
@@ -698,6 +718,8 @@ void DrawWindmillTower() {
 
     }
     glEnd();
+	glEnable(GL_LIGHTING);   // Re-enable lighting
+    glPopMatrix();
 }
 
 
@@ -715,6 +737,8 @@ void DrawWindmillBlade() {
 
 
 void DrawWindmillBlades() {
+	glPushMatrix();
+    glDisable(GL_LIGHTING);  // Disable lighting
     int numBlades = 4;
 	// set windmill blade color to white
 	glColor3f(1.0f, 1.0f, 1.0f);  // RGB for white
@@ -727,10 +751,13 @@ void DrawWindmillBlades() {
         DrawWindmillBlade();
         glPopMatrix();
     }
+	glEnable(GL_LIGHTING);   // Re-enable lighting
+    glPopMatrix();
 }
 
 
 void DrawWindmill() {
+	
     // Draw Tower
     glPushMatrix();
     glRotatef(270.0f, 1.0f, 0.0f, 0.0f); // Rotate 270 degrees around the X-axis
@@ -742,6 +769,7 @@ void DrawWindmill() {
     glTranslatef(0.0f, 2.0f, 0.35f); // Adjust blade position to top of the tower
     DrawWindmillBlades();
     glPopMatrix();
+	
 }
 
 void DrawSkybox() {
