@@ -702,10 +702,6 @@ void DrawLand(){
 }
 
 // function draws a rainbox out over the ocean
-#define RAINBOW_RADIUS 1.0f
-#define RAINBOW_WIDTH 0.1f
-#define RAINBOW_SEGMENTS 100
-
 // The colors of the rainbow (Red, Orange, Yellow, Green, Blue, Violet)
 GLfloat RainbowColors[6][3] = {
     { 1.0f, 0.0f, 0.0f }, // Red
@@ -717,40 +713,51 @@ GLfloat RainbowColors[6][3] = {
 };
 
 void DrawLargeRainbow() {
-    float angleStep = (2.0f * M_PI) / RAINBOW_SEGMENTS;  // Defines the segment resolution of the rainbow
-    float radius = 200.0f;  // Large radius for a far away rainbow
-    float rainbowWidth = 2.0f;  // Decrease the width for narrower stripes
+	float twoPi = (2.0f * M_PI);
+    float angleStep = twoPi / 100;  // Defines the segment resolution of the rainbow
+    float rainbowRadius = 200.0f;  // Defines the radius of the rainbow
+    float rainbowWidth = 2.0f;  // Defines the width of each of the rainbow's stripes
 	
-    glDisable(GL_LIGHTING);  // Disable lighting for proper color display
-    glEnable(GL_BLEND);      // Enable blending for transparency
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);  // Set blend function
+    glDisable(GL_LIGHTING);  // Disables lighting
+    glEnable(GL_BLEND);      // Enable blending for realistic rainbow transparency
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);  // Sets blend function
 
     glPushMatrix();
 
-    // Position the rainbow in the sky and to the left
-    glTranslatef(-170.0f, 00.0f, 99.0f);  // Adjust these values as needed for position
+    // Positions the rainbow
+	float rainbowX = -170.0f;
+	float rainbowY = 0.0f;
+	float rainbowZ = 99.0f;
+    glTranslatef(rainbowX, rainbowY, rainbowZ);  
 
-    for (int i = 0; i < 6; i++) {  // 6 color bands for a standard rainbow
+	int numStripes = 6;
+    for (int rainbowIndex = 0; rainbowIndex < numStripes; rainbowIndex++) {  // 6 rainbow colors
         glBegin(GL_TRIANGLE_STRIP);
-        for (int j = 0; j <= RAINBOW_SEGMENTS * 3/8 ; j++) {  // Half a circle for the arc
-            float angle = j * angleStep;
-            float innerRadius = radius - i * rainbowWidth;
-            float outerRadius = radius - (i + 1) * rainbowWidth;
+		int loopIterationVal = 100;
+        for (int rainbowInd2 = 0; rainbowInd2 <= loopIterationVal * 3/8 ; rainbowInd2++) {  // Half a circle for the arc
+            float rainbowAngle = rainbowInd2 * angleStep;
+            float rainbowInnerRadius = rainbowRadius - rainbowIndex * rainbowWidth;
+            float outerRadius = rainbowRadius - (rainbowIndex + 1) * rainbowWidth;
+			float alphaVal = 0.5f;
 
-            // Inner vertex
-            glColor4f(RainbowColors[i][0], RainbowColors[i][1], RainbowColors[i][2], 0.5f);  // Set the alpha to 0.5 for half transparency
-            glVertex3f(cos(angle) * innerRadius, sin(angle) * innerRadius, 0.0f);
+            // Inner vertex of the rainbow
+            glColor4f(RainbowColors[rainbowIndex][0], RainbowColors[rainbowIndex][1], RainbowColors[rainbowIndex][2], alphaVal);  // Sets the alpha value to 0.5 for transparency
+            float innerVertexCosFactor = cos(rainbowAngle) * rainbowInnerRadius;
+			float innerVertexSinFactor = sin(rainbowAngle) * rainbowInnerRadius;
+			glVertex3f(innerVertexCosFactor, innerVertexSinFactor, 0.0f);
             
-            // Outer vertex
-            glColor4f(RainbowColors[i][0], RainbowColors[i][1], RainbowColors[i][2], 0.5f);  // Use the same alpha for consistent transparency
-            glVertex3f(cos(angle) * outerRadius, sin(angle) * outerRadius, 0.0f);
+            // Outer vertex of the rainbow
+            glColor4f(RainbowColors[rainbowIndex][0], RainbowColors[rainbowIndex][1], RainbowColors[rainbowIndex][2], alphaVal);  // Same alpha val
+            float outerVertexCosFactor = cos(rainbowAngle) * outerRadius;
+			float outerVertexSinFactor = sin(rainbowAngle) * outerRadius;
+			glVertex3f(outerVertexCosFactor, outerVertexSinFactor, 0.0f);
         }
         glEnd();
     }
 
     glPopMatrix();
     glDisable(GL_BLEND);     // Disable blending after drawing the rainbow
-    glEnable(GL_LIGHTING);   // Re-enable lighting
+    glEnable(GL_LIGHTING);   // Re-enables lighting
 }
 
 
