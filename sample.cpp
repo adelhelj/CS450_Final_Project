@@ -349,13 +349,9 @@ void DrawBuildings() {
         glutSolidCube(1.0f);
         glPopMatrix();
     }
-
 	glEnable(GL_LIGHTING);   // Re-enables lighting
     glPopMatrix();
 }
-
-
-
 
 
 // My beach and ocean functions
@@ -363,30 +359,28 @@ void DrawBuildings() {
 GLuint beachTextureId;
 
 void LoadSandTexture() {
-    // The path to your BMP texture file
+    // The path to the sand BMP texture file
     char sandTextureFile[] = "sand.bmp";
-    
     int width, height;
     unsigned char *sandTextureData = BmpToTexture(sandTextureFile, &width, &height);
     if (sandTextureData == NULL) {
-        fprintf(stderr, "Cannot load sand texture\n");
+        fprintf(stderr, "Unable to load the sand texture\n");
         exit(1);
     }
-
-    // Generate texture ID and bind it
+    // Generates the texture ID and binds it
     glGenTextures(1, &beachTextureId);
     glBindTexture(GL_TEXTURE_2D, beachTextureId);
-
-    // Set texture parameters
+    
+	// Sets the texture parameters
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-
-    // Send texture data to OpenGL
+    
+	// Sends the sand texture data to OpenGL
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, sandTextureData);
-
-    // Clean up
+    
+	// Clean up
     delete[] sandTextureData;
 }
 
@@ -400,21 +394,21 @@ void LoadGrassTexture(){
 	int width, height;
 	unsigned char *grassTextureData = BmpToTexture(grassTextureFile, &width, &height);
 	if (grassTextureData == NULL){
-		fprintf(stderr, "Cannot load grass texture\n");
+		fprintf(stderr, "Unable to load the grass texture\n");
 		exit(1);
 	}
 
-	// generate texture id and bind it
+	// generates the texture id and binds it
 	glGenTextures(1, &grassTextureId);
 	glBindTexture(GL_TEXTURE_2D, grassTextureId);
 
-	// set texture parameters
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); // repeat texture in S direction
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT); // repeat texture in T direction
+	// sets the texture parameters for the grass texture
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); // repeat the texture in S direction
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT); // repeat the texture in T direction
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); // linear mag filter
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); // linear min filter
 
-	// send texture data to OpenGL
+	// sends the grass texture data to OpenGL
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, grassTextureData);
 
 	// clean up
