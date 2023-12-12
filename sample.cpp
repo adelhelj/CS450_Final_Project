@@ -1046,10 +1046,11 @@ Display( )
     }
 
 	// Update the light source position
-    lightAngle += angularSpeed;
-	float yCoord = 10.0f;
-	float xCoord = lightRadius * sin(lightAngle);
-	float zCoord = lightRadius * cos(lightAngle);
+	float yCoord = SunPosY->GetValue(Time) - 12.0f;
+	float xCoord = SunPosX->GetValue(Time);
+	float zCoord = SunPosZ->GetValue(Time);
+
+
     GLfloat lightPosition[] = {
         xCoord,
         yCoord,
@@ -1058,53 +1059,7 @@ Display( )
     };
     glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
 
-	// draw the light source sphere
-	glPushMatrix();
-    glDisable(GL_LIGHTING); // Disable lighting for the sphere
-    glTranslatef(lightPosition[0], lightPosition[1], lightPosition[2]);
-	// sphere color code here
-	// Set the color of the sphere based on the currentLightColor
-	GLfloat sphereColor[3]; // RGB color
-	switch (currentLightColor) {
-		case 0: // White
-			sphereColor[0] = 1.0f;
-			sphereColor[1] = 1.0f;
-			sphereColor[2] = 1.0f;
-			break;
-		case 1: // Red
-			sphereColor[0] = 1.0f;
-			sphereColor[1] = 0.0f;
-			sphereColor[2] = 0.0f;
-			break;
-		case 2: // Green
-			sphereColor[0] = 0.0f;
-			sphereColor[1] = 1.0f;
-			sphereColor[2] = 0.0f;
-			break;
-		case 3: // Blue
-			sphereColor[0] = 0.0f;
-			sphereColor[1] = 0.0f;
-			sphereColor[2] = 1.0f;
-			break;
-		case 4: // Yellow
-			sphereColor[0] = 1.0f;
-			sphereColor[1] = 1.0f;
-			sphereColor[2] = 0.0f;
-			break;
-		default: // Default to white
-			sphereColor[0] = 1.0f;
-			sphereColor[1] = 1.0f;
-			sphereColor[2] = 1.0f;
-			break;
-	}
-
-	glColor3fv(sphereColor); // Set the color of the sphere
-    glutSolidSphere(0.2, 20, 20); // Adjust the radius and other parameters as needed
-    glEnable(GL_LIGHTING); // Re-enable lighting for other objects
-    glPopMatrix();
-
-
-
+	
 	// draw the box object by calling up its display list:
 	// glCallList( BoxList );
 
