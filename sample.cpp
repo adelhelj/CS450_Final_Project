@@ -650,7 +650,6 @@ void DrawCloud(Cloud cloud) {
 void DrawClouds() {
 	glPushMatrix();
     glDisable(GL_LIGHTING);  // Disables lighting
-
 	SetMaterial(1.0f, 1.0f, 1.0f, 100.0f);
     glColor3f(1.0f, 1.0f, 1.0f); // White color for clouds
     for (int cloudIndex = 0; cloudIndex < 100; cloudIndex++) {
@@ -662,7 +661,6 @@ void DrawClouds() {
         DrawCloud(clouds[cloudIndex]);
         glPopMatrix();
     }
-
 	glEnable(GL_LIGHTING);   // Re-enables lighting
     glPopMatrix();
 }
@@ -670,34 +668,36 @@ void DrawClouds() {
 
 
 
-// My land functions - draw the land with grass texture
+// My land functions - draws the land with grass texture
 void DrawLand(){
     glPushMatrix();
-    glDisable(GL_LIGHTING);  // Disable lighting
+    glDisable(GL_LIGHTING);  // Disablse lighting
 
-    // Number of times to repeat the texture
-    const float textureRepeatX = 50.0f; // Repeat 50 times along the X-axis
-    const float textureRepeatZ = 50.0f; // Repeat 50 times along the Z-axis
+    // Number of times to repeat the grass texture
+    const float textureRepeatX = 50.0f; // Repeats grass texture 50 times along the X-axis
+    const float textureRepeatZ = 50.0f; // Repeat grass texture 50 times along the Z-axis
 
-    // Bind the grass texture
+    // Binds the grass texture
     glBindTexture(GL_TEXTURE_2D, grassTextureId);
     glEnable(GL_TEXTURE_2D);
 
-    // Set the grass color to green and bind the texture
+    // Sets the grass color to green and binds the texture
     glColor3f(0.0f, 0.5f, 0.0f); // green color
 
-    // Draw the land quad with repeated texture coordinates
+    // Draws the land quad with repeated texture coordinates
     glBegin(GL_QUADS);
-        glTexCoord2f(0.0f, 0.0f); glVertex3f(-1000.0f, 0.0f, 1000.0f);
-        glTexCoord2f(textureRepeatX, 0.0f); glVertex3f(1000.0f, 0.0f, 1000.0f);
-        glTexCoord2f(textureRepeatX, textureRepeatZ); glVertex3f(1000.0f, 0.0f, -1000.0f);
-        glTexCoord2f(0.0f, textureRepeatZ); glVertex3f(-1000.0f, 0.0f, -1000.0f);
+		float landVertexMin = -1000.0f;
+		float landVertexMax = 1000.0f;
+        glTexCoord2f(0.0f, 0.0f); glVertex3f(landVertexMin, 0.0f, landVertexMax);
+        glTexCoord2f(textureRepeatX, 0.0f); glVertex3f(landVertexMax, 0.0f, landVertexMax);
+        glTexCoord2f(textureRepeatX, textureRepeatZ); glVertex3f(landVertexMax, 0.0f, landVertexMin);
+        glTexCoord2f(0.0f, textureRepeatZ); glVertex3f(landVertexMin, 0.0f, landVertexMin);
     glEnd();
 
     glDisable(GL_TEXTURE_2D);
 
-    glDisable(GL_TEXTURE_2D); // Disable texturing
-    glEnable(GL_LIGHTING);    // Re-enable lighting
+    glDisable(GL_TEXTURE_2D); // Disables texturing
+    glEnable(GL_LIGHTING);    // Re-enables lighting
     glPopMatrix();
 }
 
