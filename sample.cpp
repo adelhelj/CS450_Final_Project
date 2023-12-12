@@ -498,19 +498,25 @@ void InitSunPosition() {
 
 	// Initialize Keytimes for sun color components to have sun red orange in beginning and end and yellow at top
 	// Sun Red component
-	SunRed->AddTimeValue(0.0f, 1.0f); // Start position (yellow - high red)
-	SunRed->AddTimeValue(0.5f, 1.0f); // Mid position (yellow-orange - higher red)
-	SunRed->AddTimeValue(1.0f, 1.0f); // End position (yellow - return to high red)
+	SunRed->AddTimeValue(0.0f, 1.0f); // Sunrise - less intense red
+    SunRed->AddTimeValue(0.25f, 1.0f); // Approach midday - still red
+    SunRed->AddTimeValue(0.5f, 1.0f); // Midday - pure yellow (high red component)
+    SunRed->AddTimeValue(0.75f, 1.0f); // Leaving midday - still red
+    SunRed->AddTimeValue(1.0f, 1.0f); // Sunset - less intense red
 
-	// Sun Green component
-	SunGreen->AddTimeValue(0.0f, 1.0f); // Start position (yellow - high green)
-	SunGreen->AddTimeValue(0.5f, 0.8f); // Mid position (yellow-orange - slightly less green)
-	SunGreen->AddTimeValue(1.0f, 1.0f); // End position (yellow - return to high green)
+    // Sun Green component - reduced green at sunrise and sunset for a warmer hue
+    SunGreen->AddTimeValue(0.0f, 0.8f); // Sunrise - warmer hue
+    SunGreen->AddTimeValue(0.25f, 0.8f); // Approach midday - typical green level
+    SunGreen->AddTimeValue(0.5f, 1.0f); // Midday - pure yellow (full green component)
+    SunGreen->AddTimeValue(0.75f, 0.8f); // Leaving midday - typical green level
+    SunGreen->AddTimeValue(1.0f, 0.8f); // Sunset - warmer hue
 
-	// Sun Blue component
-	SunBlue->AddTimeValue(0.0f, 0.0f); // Start position (yellow - no blue)
-	SunBlue->AddTimeValue(0.5f, 0.0f); // Mid position (yellow-orange - no blue)
-	SunBlue->AddTimeValue(1.0f, 0.0f); // End position (yellow - no blue)
+    // Sun Blue component - no blue to emphasize the red and yellow colors for sunrise and sunset, and yellow for midday
+    SunBlue->AddTimeValue(0.0f, 0.0f); // Sunrise - no blue
+    SunBlue->AddTimeValue(0.25f, 0.0f); // Approach midday - no blue
+    SunBlue->AddTimeValue(0.5f, 0.0f); // Midday - pure yellow (no blue component)
+    SunBlue->AddTimeValue(0.75f, 0.0f); // Leaving midday - no blue
+    SunBlue->AddTimeValue(1.0f, 0.0f); // Sunset - no blue
 
 
 }
