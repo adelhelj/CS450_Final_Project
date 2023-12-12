@@ -517,8 +517,6 @@ void InitSunPosition() {
     SunBlue->AddTimeValue(0.5f, 0.0f); // Midday - pure yellow (no blue component)
     SunBlue->AddTimeValue(0.75f, 0.0f); // Leaving midday - no blue
     SunBlue->AddTimeValue(1.0f, 0.0f); // Sunset - no blue
-
-
 }
 
 void DrawSunPosition(float time) {
@@ -666,7 +664,59 @@ void DrawLand(){
     glPopMatrix();
 }
 
+// function draws a rainbox out over the ocean
+#define RAINBOW_RADIUS 1.0f
+#define RAINBOW_WIDTH 0.1f
+#define RAINBOW_SEGMENTS 100
+
+// The colors of the rainbow (Red, Orange, Yellow, Green, Blue, Violet)
+GLfloat RainbowColors[6][3] = {
+    { 1.0f, 0.0f, 0.0f }, // Red
+    { 1.0f, 0.5f, 0.0f }, // Orange
+    { 1.0f, 1.0f, 0.0f }, // Yellow
+    { 0.0f, 1.0f, 0.0f }, // Green
+    { 0.0f, 0.0f, 1.0f }, // Blue
+    { 0.8f, 0.0f, 1.0f }  // Violet
+};
+
+void DrawLargeRainbow() {
+    float angleStep = (2.0f * M_PI) / RAINBOW_SEGMENTS;  // Defines the segment resolution of the rainbow
+    float radius = 200.0f;  // Large radius for a far away rainbow
+    float rainbowWidth = 2.0f;  // Decrease the width for narrower stripes
 	
+    glDisable(GL_LIGHTING);  // Disable lighting for proper color display
+    glEnable(GL_BLEND);      // Enable blending for transparency
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);  // Set blend function
+
+    glPushMatrix();
+
+    // Position the rainbow in the sky and to the left
+    glTranslatef(-170.0f, 00.0f, 99.0f);  // Adjust these values as needed for position
+
+    for (int i = 0; i < 6; i++) {  // 6 color bands for a standard rainbow
+        glBegin(GL_TRIANGLE_STRIP);
+        for (int j = 0; j <= RAINBOW_SEGMENTS * 3/8 ; j++) {  // Half a circle for the arc
+            float angle = j * angleStep;
+            float innerRadius = radius - i * rainbowWidth;
+            float outerRadius = radius - (i + 1) * rainbowWidth;
+
+            // Inner vertex
+            glColor4f(RainbowColors[i][0], RainbowColors[i][1], RainbowColors[i][2], 0.5f);  // Set the alpha to 0.5 for half transparency
+            glVertex3f(cos(angle) * innerRadius, sin(angle) * innerRadius, 0.0f);
+            
+            // Outer vertex
+            glColor4f(RainbowColors[i][0], RainbowColors[i][1], RainbowColors[i][2], 0.5f);  // Use the same alpha for consistent transparency
+            glVertex3f(cos(angle) * outerRadius, sin(angle) * outerRadius, 0.0f);
+        }
+        glEnd();
+    }
+
+    glPopMatrix();
+    glDisable(GL_BLEND);     // Disable blending after drawing the rainbow
+    glEnable(GL_LIGHTING);   // Re-enable lighting
+}
+
+
 
 // My Windmill functions
 
@@ -1112,6 +1162,7 @@ Display( )
     glPushMatrix();
     glTranslatef(0.0f, 0.0f, 0.0f); 
     DrawBeachAndOcean();
+	DrawLargeRainbow();
     glPopMatrix();
 	DrawBuildings();
 	DrawClouds();
