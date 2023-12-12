@@ -416,61 +416,89 @@ void LoadGrassTexture(){
 }
 
 
-
-
-const int BEACH_WIDTH = 200; // Width of the beach plane
-const int BEACH_DEPTH = 12; // Reduced depth of the beach plane so it doesn't extend too far
-const float BEACH_START_Z = 5.0f; // Start Z position of the beach just past the windmill
-const float WATER_LEVEL = 0.1f; // Height of the water relative to the land
+const int beach_quad_width = 200; // Width of the beach plane/quad
+const int beach_quad_y_value = 12; // the depth of the beach
+const float beach_beginning_z_coord = 5.0f; // the start Z position of the beach just that is just past the windmill
+const float ocean_y_val = 0.1f; // the height of the ocean water relative to the land
 
 void DrawBeachAndOcean() {
 	glPushMatrix();
     glDisable(GL_LIGHTING);  // Disable lighting
 
-	// Number of times to repeat the texture
-    const float textureRepeatWidth = 30.0f;
-    const float textureRepeatDepth = 300.0f;
+	// Number of times to repeat the texture based on width and depth
+    const float numTimesRepeatTextureWidth = 30.0f;
+    const float numTimesRepeatTextureDepth = 300.0f;
 
     // Bind the sand texture
     glBindTexture(GL_TEXTURE_2D, beachTextureId);
     glEnable(GL_TEXTURE_2D);
 
-    // Set the beach color to sandy yellow and bind the texture
+    // Sets the beach color to a sandy yellow and binds the texture
     glColor3f(0.9f, 0.8f, 0.5f); // sandy yellow color
 
-    // Draw the beach quad with texture coordinates
+    // Draws the beach quad with texture coordinates
     glBegin(GL_QUADS);
-        glTexCoord2f(0.0f, 0.0f); glVertex3f(-BEACH_WIDTH / 2, WATER_LEVEL, BEACH_START_Z);
-        glTexCoord2f(textureRepeatWidth, 0.0f); glVertex3f(BEACH_WIDTH / 2, WATER_LEVEL, BEACH_START_Z);
-        glTexCoord2f(textureRepeatWidth, textureRepeatDepth); glVertex3f(BEACH_WIDTH / 2, WATER_LEVEL, BEACH_START_Z + BEACH_DEPTH);
-        glTexCoord2f(0.0f, textureRepeatDepth); glVertex3f(-BEACH_WIDTH / 2, WATER_LEVEL, BEACH_START_Z + BEACH_DEPTH);
+		float BeachQuadX1 = -beach_quad_width / 2;
+		float BeachQuadY1 = ocean_y_val;
+		float BeachQuadZ1 = beach_beginning_z_coord;
+        glTexCoord2f(0.0f, 0.0f); glVertex3f(BeachQuadX1, BeachQuadY1, BeachQuadZ1);
+
+		float BeachQuadX2 = beach_quad_width / 2;
+		float BeachQuadY2 = ocean_y_val;
+		float BeachQuadZ2 = beach_beginning_z_coord; 
+        glTexCoord2f(numTimesRepeatTextureWidth, 0.0f); glVertex3f(BeachQuadX2, BeachQuadY2, BeachQuadZ2);
+
+		float BeachQuadX3 = beach_quad_width / 2;
+		float BeachQuadY3 = ocean_y_val;
+		float BeachQuadZ3 = beach_beginning_z_coord + beach_quad_y_value; 
+        glTexCoord2f(numTimesRepeatTextureWidth, numTimesRepeatTextureDepth); glVertex3f(BeachQuadX3, BeachQuadY3, BeachQuadZ3);
+        
+		float BeachQuadX4 = -beach_quad_width / 2;
+		float BeachQuadY4 = ocean_y_val;
+		float BeachQuadZ4 = beach_beginning_z_coord + beach_quad_y_value; 
+		glTexCoord2f(0.0f, numTimesRepeatTextureDepth); glVertex3f(BeachQuadX4, BeachQuadY4, BeachQuadZ4);
     glEnd();
 
     glDisable(GL_TEXTURE_2D);
 
 
-    // Set the ocean color to a nice shade of blue
+    // Sets the ocean color to a nice shade of blue
     glColor3f(0.0f, 0.5f, 0.8f); // blue color
 
     // Draw the ocean quad, it should start where the land ends
     glBegin(GL_QUADS);
-        glVertex3f(-BEACH_WIDTH / 2, WATER_LEVEL, BEACH_START_Z + BEACH_DEPTH);
-        glVertex3f(BEACH_WIDTH / 2, WATER_LEVEL, BEACH_START_Z + BEACH_DEPTH);
-        glVertex3f(BEACH_WIDTH / 2, WATER_LEVEL, 1000.0f);
-        glVertex3f(-BEACH_WIDTH / 2, WATER_LEVEL, 1000.0f);
+
+		float OceanQuadX1 = -beach_quad_width / 2;
+		float OceanQuadY1 = ocean_y_val;
+		float OceanQuadZ1 = beach_beginning_z_coord + beach_quad_y_value;
+
+		float OceanQuadX2 = beach_quad_width / 2;
+		float OceanQuadY2 = ocean_y_val;
+		float OceanQuadZ2 = beach_beginning_z_coord + beach_quad_y_value;
+
+		float OceanQuadX3 = beach_quad_width / 2;
+		float OceanQuadY3 = ocean_y_val;
+		float OceanQuadZ3 = 1000.0f;
+
+		float OceanQuadX4 = -beach_quad_width / 2;
+		float OceanQuadY4 = ocean_y_val;
+		float OceanQuadZ4 = 1000.0f;
+
+        glVertex3f(OceanQuadX1, OceanQuadY1, OceanQuadZ1);
+        glVertex3f(OceanQuadX2, OceanQuadY2, OceanQuadZ2);
+        glVertex3f(OceanQuadX3, OceanQuadY3, OceanQuadZ3);
+        glVertex3f(OceanQuadX4, OceanQuadY4, OceanQuadZ4);
     glEnd();
 	
-	glEnable(GL_LIGHTING);   // Re-enable lighting
+	glEnable(GL_LIGHTING);   // Re-enables lighting
     glPopMatrix();
 }
 
 // Sun functions
-// Create three instances of Keytimes for each axis
 Keytimes *SunPosX = new Keytimes();
 Keytimes *SunPosY = new Keytimes();
 Keytimes *SunPosZ = new Keytimes();
 
-// Create three instances of Keytimes for each sun RGB color component
 Keytimes *SunRed = new Keytimes();
 Keytimes *SunGreen = new Keytimes();
 Keytimes *SunBlue = new Keytimes();
