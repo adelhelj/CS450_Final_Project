@@ -155,20 +155,14 @@ const GLfloat FOGSTART    = 1.5f;
 const GLfloat FOGEND      = 4.f;
 
 
-
-
-
 // for animation:
-
 const int MS_PER_CYCLE = 100000;		// 10000 milliseconds = 10 seconds; make this larger to make animation slower
-
 
 // what options should we compile-in?
 // in general, you don't need to worry about these
 // i compile these in to show class examples of things going wrong
 //#define DEMO_Z_FIGHTING
 //#define DEMO_DEPTH_BUFFER
-
 
 // non-constant global variables:
 
@@ -246,71 +240,70 @@ float			Unit(float [3]);
 
 // Building Functions
 typedef struct {
-    float x, y, z; // Position
+    float x, y, z; // Position of the building
     float width;   // Width of building
     float height;  // Height of the building
-    int colorIndex; // Index to the color array
+    int colorIndex; // Index to the color array used to assign colors to buildings
 } Building;
 
 
 Building buildings[100]; // Array to hold building data
 
 // Define boundaries (example values, adjust according to scene)
-float minX = -50.0f; // Minimum X coordinate
-float maxX = 50.0f;  // Maximum X coordinate
-float minY = 0.0f;   // Minimum Y coordinate (ground level)
-float maxY = 10.0f;  // Maximum Y coordinate
-float minZ = -100.0f;  // Minimum Z coordinate (behind the windmill)
-float maxZ = -10.0f; // Maximum Z coordinate
+float minBuildingSpawnX = -50.0f; // Minimum X coordinate for buildings to be spawned on
+float maxBuildingSpawnX = 50.0f;  // Maximum X coordinate for buildings to be spawned on
+float minBuildingSpawnY = 0.0f;   // Minimum Y coordinate (ground level) for buildings to be spawned on
+float maxBuildingSpawnY = 10.0f;  // Maximum Y coordinate for buildings to be spawned on
+float minBuildingSpawnZ = -100.0f;  // Minimum Z coordinate (behind the windmill) for buildings to be spawned on
+float maxBuildingSpawnZ = -10.0f; // Maximum Z coordinate for buildings to be spawned on
 
 
 // Building color code
-
 typedef struct {
-    float r, g, b;  // RGB color components
+    float r, g, b;  // RGB color components for building color
 } Color;
 
-
+// The building colors used for the building drawings
 Color floridaKeysColors[] = {
     { 0.0f, 0.6f, 0.8f }, // Ocean Blue
     { 0.2f, 0.8f, 0.8f }, // Turquoise
     { 0.1f, 0.7f, 0.7f }, // Teal
     { 0.2f, 0.5f, 0.7f }, // Cerulean
     { 0.3f, 0.9f, 0.9f },  // Sky Blue
-	{ 0.8f, 0.4f, 0.6f },// Carribean pink
-	 // cream
-	{ 0.9f, 0.8f, 0.6f },
-	// marble
-	{ 0.9f, 0.9f, 0.9f },
-	// light grey
-	{ 0.8f, 0.8f, 0.8f },
-	// dark grey
-	{ 0.6f, 0.6f, 0.6f },
-	// dark brown
-	{ 0.4f, 0.2f, 0.0f },
-	// light brown
-	{ 0.6f, 0.4f, 0.2f },
+	{ 0.8f, 0.4f, 0.6f }, // Carribean pink
+	{ 0.9f, 0.8f, 0.6f }, // cream
+	{ 0.9f, 0.9f, 0.9f }, // marble
+	{ 0.8f, 0.8f, 0.8f }, // light grey
+	{ 0.6f, 0.6f, 0.6f }, // dark grey
+	{ 0.4f, 0.2f, 0.0f }, // dark brown
+	{ 0.6f, 0.4f, 0.2f },// light brown
 };
 
-
-
-
-
-
+// Configures the locations of the buildings
 void InitBuildingPositions() {
     // Define the maximum height of buildings relative to the windmill
     float maxBuildingHeight = 2.0f; // Assuming windmill height is 2.0 units
-	int numColors = sizeof(floridaKeysColors) / sizeof(Color);
+	int sizeArrColors = sizeof(floridaKeysColors);
+	int sizeColor = sizeof(Color);
+	int numColors = sizeArrColors / sizeColor;
 
-    for (int i = 0; i < 100; i++) {
-        buildings[i].x = minX + ((float)rand() / RAND_MAX) * (maxX - minX);
-        buildings[i].y = minY; // Ground level
-        buildings[i].z = minZ + ((float)rand() / RAND_MAX) * (maxZ - minZ);
-        // Set the building height to be a random value, but not more than maxBuildingHeight
-        buildings[i].height = (float)(rand() % (int)(maxBuildingHeight * 10)) / 10.0f + 0.5f; // Added 0.5 to ensure we don't have 0 height
-        buildings[i].width = (float)(rand() % 4 + 1);
-		buildings[i].colorIndex = rand() % numColors; // Assign a random color index
-
+	// replace i with buildingIndex
+	int numBuildings = 100;
+	for (int buildingIndex = 0; buildingIndex < numBuildings; buildingIndex++) {
+		int xRange = maxBuildingSpawnX - minBuildingSpawnX;
+		float randXVal = ((float)rand() / RAND_MAX);
+        buildings[buildingIndex].x = minBuildingSpawnX + randXVal * xRange;
+        buildings[buildingIndex].y = minBuildingSpawnY; // The Ground level is at 0
+		int zRange = maxBuildingSpawnZ - minBuildingSpawnZ;
+		float randZVal = ((float)rand() / RAND_MAX);
+        buildings[buildingIndex].z = minBuildingSpawnZ + randZVal * zRange;
+        // Sets the building height to a random value, but not one that excees the maxBuildingHeight
+		float heightMin = 0.5f;
+		int buildingHeight = (int)(maxBuildingHeight * 10);
+		float randomBuildingHeight = (float)(rand() % buildingHeight);
+        buildings[buildingIndex].height = randomBuildingHeight / 10.0f + heightMin; // Added 0.5 to ensure we don't have 0 height
+        buildings[buildingIndex].width = (float)(rand() % 4 + 1);
+		buildings[buildingIndex].colorIndex = rand() % numColors; // Assigns a random color index to give building random color
     }
 }
 
@@ -520,7 +513,6 @@ void InitSunPosition() {
 }
 
 void DrawSunPosition(float time) {
-	
     // Convert linear time to ping-pong time
     float pingPongTime = 1.0f - fabsf(2.0f * time - 1.0f);
 
@@ -1146,7 +1138,7 @@ Display( )
 
     GLfloat lightPosition[] = {
         xCoord,
-        yCoord,
+        yCoord - 6.0f,
         zCoord,
         1.0f
     };
