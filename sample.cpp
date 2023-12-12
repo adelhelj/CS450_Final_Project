@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include "common.h"
 
 #define _USE_MATH_DEFINES
 #include <math.h>
@@ -17,6 +18,23 @@
 #include <OpenGL/glu.h>
 #include "glut.h"
 #include "keytime.h"
+
+
+#include "setmaterial.cpp"
+//#include "setlight.cpp"
+//#include "osusphere.cpp"
+//#include "osucone.cpp"
+//#include "osutorus.cpp"
+#include "bmptotexture.cpp"
+//#include "loadobjfile.cpp"
+#include "keytime.cpp"
+//#include "glslprogram.cpp"
+
+int currentLightColor = 0; // Declare currentLightColor as a global variable
+int currentLightType = 0;
+int isSpotLight = 0; // 0 for point light, 1 for spot light
+GLuint POINT_LIGHT = 0;
+GLuint SPOT_LIGHT = 1;
 
 int cameraMode = 0; // 0 = free camera, 1 = follow camera
 
@@ -136,9 +154,9 @@ const GLfloat FOGDENSITY  = 0.30f;
 const GLfloat FOGSTART    = 1.5f;
 const GLfloat FOGEND      = 4.f;
 
-// for lighting:
 
-const float	WHITE[ ] = { 1.,1.,1.,1. };
+
+
 
 // for animation:
 
@@ -403,6 +421,9 @@ const float BEACH_START_Z = 5.0f; // Start Z position of the beach just past the
 const float WATER_LEVEL = 0.1f; // Height of the water relative to the land
 
 void DrawBeachAndOcean() {
+	glPushMatrix();
+    glDisable(GL_LIGHTING);  // Disable lighting
+
     // Bind the sand texture
     glBindTexture(GL_TEXTURE_2D, beachTextureId);
     glEnable(GL_TEXTURE_2D);
@@ -431,6 +452,9 @@ void DrawBeachAndOcean() {
         glVertex3f(BEACH_WIDTH / 2, WATER_LEVEL, 1000.0f);
         glVertex3f(-BEACH_WIDTH / 2, WATER_LEVEL, 1000.0f);
     glEnd();
+	
+	glEnable(GL_LIGHTING);   // Re-enable lighting
+    glPopMatrix();
 }
 
 // Sun functions
@@ -499,12 +523,16 @@ void DrawSunPosition(float time) {
 
 
 void DrawSun(float time) {
+	glPushMatrix();
+    glDisable(GL_LIGHTING);  // Disable lighting
     // set sun color to keytimes vals
 	glColor3f(SunRed->GetValue(time), SunGreen->GetValue(time), SunBlue->GetValue(time)); // RGB for sun color
     glPushMatrix();
     DrawSunPosition(Time);
     glutSolidSphere(5.0f, 20, 20); // Draw the sun as a sphere
 	glDisable(GL_TEXTURE_2D);
+    glPopMatrix();
+	glEnable(GL_LIGHTING);   // Re-enable lighting
     glPopMatrix();
 }
 
@@ -573,6 +601,10 @@ void DrawCloud(Cloud cloud) {
 
 
 void DrawClouds() {
+	glPushMatrix();
+    glDisable(GL_LIGHTING);  // Disable lighting
+
+	SetMaterial(1.0f, 1.0f, 1.0f, 100.0f);
     glColor3f(1.0f, 1.0f, 1.0f); // White color for clouds
     for (int i = 0; i < 100; i++) {
         glPushMatrix();
@@ -580,6 +612,9 @@ void DrawClouds() {
         DrawCloud(clouds[i]);
         glPopMatrix();
     }
+
+	glEnable(GL_LIGHTING);   // Re-enable lighting
+    glPopMatrix();
 }
 
 
@@ -587,23 +622,26 @@ void DrawClouds() {
 
 // My land functions - draw the land with grass texture
 void DrawLand(){
-	// bind the grass texture
-	glBindTexture(GL_TEXTURE_2D, grassTextureId);
-	glEnable(GL_TEXTURE_2D);
+    glPushMatrix();
+    glDisable(GL_LIGHTING);  // Disable lighting
 
-	// set the grass color to green and bind the texture
-	glColor3f(0.0f, 0.5f, 0.0f); // green color
+    // bind the grass texture
+    glBindTexture(GL_TEXTURE_2D, grassTextureId);
+    glEnable(GL_TEXTURE_2D);
 
-	// draw the land quad with texture coordinates
-	glBegin(GL_QUADS);
-		glTexCoord2f(0.0f, 0.0f); glVertex3f(-1000.0f, 0.0f, 1000.0f);
-		glTexCoord2f(1.0f, 0.0f); glVertex3f(1000.0f, 0.0f, 1000.0f);
-		glTexCoord2f(1.0f, 1.0f); glVertex3f(1000.0f, 0.0f, -1000.0f);
-		glTexCoord2f(0.0f, 1.0f); glVertex3f(-1000.0f, 0.0f, -1000.0f);
-	glEnd();
+    // draw the land quad with texture coordinates
+    glBegin(GL_QUADS);
+        glTexCoord2f(0.0f, 0.0f); glVertex3f(-1000.0f, 0.0f, 1000.0f);
+        glTexCoord2f(1.0f, 0.0f); glVertex3f(1000.0f, 0.0f, 1000.0f);
+        glTexCoord2f(1.0f, 1.0f); glVertex3f(1000.0f, 0.0f, -1000.0f);
+        glTexCoord2f(0.0f, 1.0f); glVertex3f(-1000.0f, 0.0f, -1000.0f);
+    glEnd();
 
-	glDisable(GL_TEXTURE_2D);
+    glDisable(GL_TEXTURE_2D); // Disable texturing
+    glEnable(GL_LIGHTING);    // Re-enable lighting
+    glPopMatrix();
 }
+
 	
 
 // My Windmill functions
@@ -707,6 +745,9 @@ void DrawWindmill() {
 }
 
 void DrawSkybox() {
+	glPushMatrix();
+    glDisable(GL_LIGHTING);  // Disable lighting
+
     // Size of the skybox - should be large enough to encompass the whole scene
     float size = 100.0f; 
 
@@ -756,64 +797,17 @@ void DrawSkybox() {
 
     // Re-enable depth writing
     glDepthMask(GL_TRUE);
+
+	glEnable(GL_LIGHTING);   // Re-enable lighting
+    glPopMatrix();
 }
 
 
 
 
-// utility to create an array from 3 separate values:
-
-float *
-Array3( float a, float b, float c )
-{
-	static float array[4];
-
-	array[0] = a;
-	array[1] = b;
-	array[2] = c;
-	array[3] = 1.;
-	return array;
-}
-
-// utility to create an array from a multiplier and an array:
-
-float *
-MulArray3( float factor, float array0[ ] )
-{
-	static float array[4];
-
-	array[0] = factor * array0[0];
-	array[1] = factor * array0[1];
-	array[2] = factor * array0[2];
-	array[3] = 1.;
-	return array;
-}
 
 
-float *
-MulArray3(float factor, float a, float b, float c )
-{
-	static float array[4];
 
-	float* abc = Array3(a, b, c);
-	array[0] = factor * abc[0];
-	array[1] = factor * abc[1];
-	array[2] = factor * abc[2];
-	array[3] = 1.;
-	return array;
-}
-
-// these are here for when you need them -- just uncomment the ones you need:
-
-//#include "setmaterial.cpp"
-//#include "setlight.cpp"
-//#include "osusphere.cpp"
-//#include "osucone.cpp"
-//#include "osutorus.cpp"
-#include "bmptotexture.cpp"
-//#include "loadobjfile.cpp"
-#include "keytime.cpp"
-//#include "glslprogram.cpp"
 
 
 // main program:
@@ -892,6 +886,10 @@ Animate( )
 	glutSetWindow( MainWindow );
 	glutPostRedisplay( );
 }
+
+float lightRadius = 10.0f;  // Radius of the circular path
+float lightAngle = 0.0f;   // Current angle of the light source in radians
+float angularSpeed = 0.01f;  // Angular speed for circular motion
 
 
 Keytimes EyeX;
@@ -1006,6 +1004,77 @@ Display( )
 	// since we are using glScalef( ), be sure the normals get unitized:
 
 	glEnable( GL_NORMALIZE );
+
+	// Set up the light source as either a point light or a spot light
+    if (currentLightType == POINT_LIGHT)
+    {
+        glEnable(GL_LIGHT0); // Enable point light
+        glLightf(GL_LIGHT0, GL_SPOT_CUTOFF, 180.0); // Disable spot light effect
+    }
+    else if (currentLightType == SPOT_LIGHT)
+    {
+        glEnable(GL_LIGHT0); // Enable spot light
+        glLightf(GL_LIGHT0, GL_SPOT_CUTOFF, 45.0); // Set the spot light cutoff angle
+    }
+
+	// Update the light source position
+    lightAngle += angularSpeed;
+	float yCoord = 10.0f;
+	float xCoord = lightRadius * sin(lightAngle);
+	float zCoord = lightRadius * cos(lightAngle);
+    GLfloat lightPosition[] = {
+        xCoord,
+        yCoord,
+        zCoord,
+        1.0f
+    };
+    glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
+
+	// draw the light source sphere
+	glPushMatrix();
+    glDisable(GL_LIGHTING); // Disable lighting for the sphere
+    glTranslatef(lightPosition[0], lightPosition[1], lightPosition[2]);
+	// sphere color code here
+	// Set the color of the sphere based on the currentLightColor
+	GLfloat sphereColor[3]; // RGB color
+	switch (currentLightColor) {
+		case 0: // White
+			sphereColor[0] = 1.0f;
+			sphereColor[1] = 1.0f;
+			sphereColor[2] = 1.0f;
+			break;
+		case 1: // Red
+			sphereColor[0] = 1.0f;
+			sphereColor[1] = 0.0f;
+			sphereColor[2] = 0.0f;
+			break;
+		case 2: // Green
+			sphereColor[0] = 0.0f;
+			sphereColor[1] = 1.0f;
+			sphereColor[2] = 0.0f;
+			break;
+		case 3: // Blue
+			sphereColor[0] = 0.0f;
+			sphereColor[1] = 0.0f;
+			sphereColor[2] = 1.0f;
+			break;
+		case 4: // Yellow
+			sphereColor[0] = 1.0f;
+			sphereColor[1] = 1.0f;
+			sphereColor[2] = 0.0f;
+			break;
+		default: // Default to white
+			sphereColor[0] = 1.0f;
+			sphereColor[1] = 1.0f;
+			sphereColor[2] = 1.0f;
+			break;
+	}
+
+	glColor3fv(sphereColor); // Set the color of the sphere
+    glutSolidSphere(0.2, 20, 20); // Adjust the radius and other parameters as needed
+    glEnable(GL_LIGHTING); // Re-enable lighting for other objects
+    glPopMatrix();
+
 
 
 	// draw the box object by calling up its display list:
@@ -1433,6 +1502,21 @@ InitLists( )
 	if (DebugOn != 0)
 		fprintf(stderr, "Starting InitLists.\n");
 
+	glEnable(GL_LIGHTING);
+	glEnable(GL_LIGHT0);
+	glEnable(GL_NORMALIZE);
+	glEnable(GL_COLOR_MATERIAL);
+
+	// Define Light Properties
+    GLfloat lightPosition[] = {0.0f, 10.0f, -1.0f, 50.0f};  // light 50 y units above the origin
+    GLfloat lightColor[] = {1.0f, 1.0f, 1.0f, 1000.0f};      // light color is white
+
+	// Set Up Light Source
+    glEnable(GL_LIGHT0);          // Use light source 0
+    glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, lightColor);
+    glLightfv(GL_LIGHT0, GL_SPECULAR, lightColor);
+
 	// create the axes:
 	AxesList = glGenLists( 1 );
 	glNewList( AxesList, GL_COMPILE );
@@ -1460,29 +1544,86 @@ Keyboard( unsigned char c, int x, int y )
 			break;
 
 		case 'o':
-		case 'O':
-			NowProjection = ORTHO;
-			break;
+        case 'O':
+            NowProjection = ORTHO;
+            break;
 
-		case 'p':
-		case 'P':
-			NowProjection = PERSP;
-			break;
+        case 'p':
+        case 'P':
+            currentLightType = POINT_LIGHT;
+            isSpotLight = 0;
+            break;
 
-		case 'q':
-		case 'Q':
-		case ESCAPE:
-			DoMainMenu( QUIT );	// will not return here
-			break;				// happy compiler
+        case 's':
+        case 'S':
+            currentLightType = SPOT_LIGHT;
+            isSpotLight = 1;
+            break;
+        case 'q':
+        case 'Q':
+        case ESCAPE:
+            DoMainMenu(QUIT); // will not return here
+            break;            // happy compiler
+
+        case 'w':
+            currentLightColor = 0; // White
+            break;
+        case 'r':
+            currentLightColor = 1; // Red
+            break;
+        case 'g':
+            currentLightColor = 2; // Green
+            break;
+        case 'b':
+            currentLightColor = 3; // Blue
+            break;
+        case 'y':
+            currentLightColor = 4; // Yellow
+            break;
 
 		default:
 			fprintf( stderr, "Don't know what to do with keyboard hit: '%c' (0x%0x)\n", c, c );
+	// Update the light source color based on the currentLightColor variable
+    GLfloat lightColor[] = {1.0f, 0.0f, 0.0f, 1.0f}; // Default to white
+    switch (currentLightColor)
+    {
+        case 0: // White
+            lightColor[0] = 1.0f;
+            lightColor[1] = 1.0f;
+            lightColor[2] = 1.0f;
+			glColor3f(1.0f, 1.0f, 1.0f);
+            break;
+        case 1: // Red
+            lightColor[0] = 1.0f;
+			lightColor[1] = 0.0f;
+			lightColor[2] = 0.0f;
+			glColor3f(1.0f, 0.0f, 0.0f);
+            break;
+        case 2: // Green
+			lightColor[0] = 0.0f;
+            lightColor[1] = 1.0f;
+			lightColor[2] = 0.0f;
+			glColor3f(0.0f, 1.0f, 0.0f);
+            break;
+        case 3: // Blue
+			lightColor[0] = 0.0f;
+			lightColor[1] = 0.0f;
+            lightColor[2] = 1.0f;
+			glColor3f(0.0f, 0.0f, 1.0f);
+            break;
+        case 4: // Yellow
+            lightColor[0] = 1.0f;
+            lightColor[1] = 1.0f;
+			lightColor[2] = 0.0f;
+			glColor3f(1.0f, 1.0f, 0.0f);
+            break;
+    }
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, lightColor);
+
+    // Force a call to Display():
+    glutSetWindow(MainWindow);
+    glutPostRedisplay();
 	}
-
-	// force a call to Display( ):
-
-	glutSetWindow( MainWindow );
-	glutPostRedisplay( );
 }
 
 
