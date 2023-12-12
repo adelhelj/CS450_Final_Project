@@ -494,6 +494,7 @@ void DrawBeachAndOcean() {
     glPopMatrix();
 }
 
+
 // Sun functions
 Keytimes *SunPosX = new Keytimes();
 Keytimes *SunPosY = new Keytimes();
@@ -506,7 +507,6 @@ Keytimes *SunBlue = new Keytimes();
 
 void InitSunPosition() {
     float sunTravelDistVal = 100.0f; 
-
     // Initializes Keytimes for X-axis 
     SunPosX->AddTimeValue(0.0f, 0.0f); // Start position
     SunPosX->AddTimeValue(0.5f, 0.0f); // Mid position
@@ -545,6 +545,7 @@ void InitSunPosition() {
     SunBlue->AddTimeValue(1.0f, 0.0f); 
 }
 
+
 void DrawSunPosition(float time) {
     // Converts linear time to ping-pong time for sun movemenbts
 	float pingPongVal = fabsf(2.0f * time - 1.0f);
@@ -558,7 +559,6 @@ void DrawSunPosition(float time) {
     // Applies translation to move the sun according to keytimes values
     glTranslatef(sunPosX, sunPosY, sunPosZ);
 }
-
 
 
 void DrawSun(float time) {
@@ -577,60 +577,68 @@ void DrawSun(float time) {
 
 
 // Cloud functions
-// Structure for cloud puffs
-// Define an array to hold cloud positions
+// Structure for clouds
+// Array holds cloud positions
 typedef struct CloudPosition {
     float x, y, z;
 } CloudPosition;
 
-CloudPosition cloudPositions[100]; // Array to hold cloud positions
+const int numClouds = 100;
+CloudPosition cloudPositions[numClouds]; // Array to hold cloud positions
 
-// Initialize cloud positions
+// Initializes cloud positions
 void InitCloudPositions() {
-    for (int i = 0; i < 100; i++) {
-        cloudPositions[i].x = (float)(rand() % 200 - 100);
-        cloudPositions[i].y = (float)(rand() % 100 + 40);
-        cloudPositions[i].z = (float)(rand() % 200 - 100);
+	int numClouds = 100;
+    for (int cloudIndex = 0; cloudIndex < numClouds; cloudIndex++) {
+        cloudPositions[cloudIndex].x = (float)(rand() % 200 - 100);
+        cloudPositions[cloudIndex].y = (float)(rand() % 100 + 40);
+        cloudPositions[cloudIndex].z = (float)(rand() % 200 - 100);
     }
 }
 
+// Structure for each part of the puffy clouds (individual sphere)
 typedef struct CloudPuff {
-    float offsetX, offsetY, offsetZ; // Offset positions for each puff
-    float size;                      // Size of each puff
+    float offsetX, offsetY, offsetZ; // Offset positions for each sphere/cloud puff
+    float size;                      // Size of each cloud puff that makes up all the clouds
 } CloudPuff;
 
 // Structure for a cloud
 typedef struct Cloud {
-    CloudPuff puffs[7]; // Each cloud can have up to 7 puffs
+    CloudPuff puffs[7]; // Each cloud has up to 7 puffs to create puffy effect
     int numPuffs;       // Actual number of puffs in this cloud
 } Cloud;
 
-Cloud clouds[100]; // Array to hold all clouds
+Cloud clouds[numClouds]; // Array holds all the clouds
 
 void InitClouds() {
-    for (int i = 0; i < 100; i++) {
-        // Randomize cloud position
-        clouds[i].numPuffs = 3 + rand() % 5;
-        for (int n = 0; n < clouds[i].numPuffs; n++) {
-            clouds[i].puffs[n].offsetX = (rand() % 20 - 10) * 0.1f;
-            clouds[i].puffs[n].offsetY = (rand() % 20 - 10) * 0.1f;
-            clouds[i].puffs[n].offsetZ = (rand() % 20 - 10) * 0.1f;
-            clouds[i].puffs[n].size = 1.0f + (rand() % 100) / 50.0f;
+    int numClouds = 100;
+    for (int cloudIndex = 0; cloudIndex < numClouds; cloudIndex++) {
+        // Randomly places the cloud positions
+        clouds[cloudIndex].numPuffs = 3 + rand() % 5;
+        for (int puffIndex = 0; puffIndex < clouds[cloudIndex].numPuffs; puffIndex++) {
+            float puffXRandVal = (rand() % 20 - 10);
+			clouds[cloudIndex].puffs[puffIndex].offsetX = puffXRandVal * 0.1f;
+			float puffYRandVal = (rand() % 20 - 10);
+            clouds[cloudIndex].puffs[puffIndex].offsetY = puffYRandVal * 0.1f;
+			float puffZRandVal = (rand() % 20 - 10);
+            clouds[cloudIndex].puffs[puffIndex].offsetZ = puffZRandVal * 0.1f;
+			float puffSizeRandVal = (rand() % 100) / 50.0;
+            clouds[cloudIndex].puffs[puffIndex].size = 1.0f + puffSizeRandVal;
         }
     }
 }
 
 void DrawCloud(Cloud cloud) {
-    for (int n = 0; n < cloud.numPuffs; n++) {
+    for (int puffIndex = 0; puffIndex < cloud.numPuffs; puffIndex++) {
         glPushMatrix();
         
-        // Increase the size of each puff to make the cloud puffier
-        float puffSize = cloud.puffs[n].size * 2.0f; // You can adjust the factor as needed
+        // Make puffSize larger to make clouds puffier
+        float puffSize = cloud.puffs[puffIndex].size * 2.0f; 
         
-        // Slightly randomize the position of each puff within the cloud
-        float offsetX = cloud.puffs[n].offsetX * 2.0f; // Adjust this factor for more randomness
-        float offsetY = cloud.puffs[n].offsetY * 2.0f;
-        float offsetZ = cloud.puffs[n].offsetZ * 2.0f;
+        // Slightly randomizes the position of each puff within the cloud by using the offset value
+        float offsetX = cloud.puffs[puffIndex].offsetX * 2.0f; // Changing this factor of 2.0 will alter the randomness
+        float offsetY = cloud.puffs[puffIndex].offsetY * 2.0f;
+        float offsetZ = cloud.puffs[puffIndex].offsetZ * 2.0f;
         
         glTranslatef(offsetX, offsetY, offsetZ);
         glutSolidSphere(puffSize, 20, 20);
@@ -641,18 +649,21 @@ void DrawCloud(Cloud cloud) {
 
 void DrawClouds() {
 	glPushMatrix();
-    glDisable(GL_LIGHTING);  // Disable lighting
+    glDisable(GL_LIGHTING);  // Disables lighting
 
 	SetMaterial(1.0f, 1.0f, 1.0f, 100.0f);
     glColor3f(1.0f, 1.0f, 1.0f); // White color for clouds
-    for (int i = 0; i < 100; i++) {
+    for (int cloudIndex = 0; cloudIndex < 100; cloudIndex++) {
         glPushMatrix();
-        glTranslatef(cloudPositions[i].x, cloudPositions[i].y, cloudPositions[i].z);
-        DrawCloud(clouds[i]);
+		float cloudX = cloudPositions[cloudIndex].x; 
+		float cloudY = cloudPositions[cloudIndex].y; 
+		float cloudZ = cloudPositions[cloudIndex].z; 
+        glTranslatef(cloudX, cloudY, cloudZ);
+        DrawCloud(clouds[cloudIndex]);
         glPopMatrix();
     }
 
-	glEnable(GL_LIGHTING);   // Re-enable lighting
+	glEnable(GL_LIGHTING);   // Re-enables lighting
     glPopMatrix();
 }
 
